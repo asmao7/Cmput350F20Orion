@@ -1,15 +1,15 @@
-#include "BasicSc2Bot.h"
+#include "OrionBot.h"
 
-void BasicSc2Bot::OnGameStart() { 
+void OrionBot::OnGameStart() { 
     std::cout << "Hello, World!" << std::endl;
 }
 
-void BasicSc2Bot::OnStep() { 
+void OrionBot::OnStep() { 
     TryBuildSupplyDepot();
 
     TryBuildBarracks();
 }
-void BasicSc2Bot::OnUnitIdle(const Unit* unit){
+void OrionBot::OnUnitIdle(const Unit* unit){
     switch (unit->unit_type.ToType()) {
         case UNIT_TYPEID::TERRAN_COMMANDCENTER: {
             Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SCV);
@@ -38,10 +38,10 @@ void BasicSc2Bot::OnUnitIdle(const Unit* unit){
     }
 }
 
-size_t BasicSc2Bot::CountUnitType(UNIT_TYPEID unit_type) {
+size_t OrionBot::CountUnitType(UNIT_TYPEID unit_type) {
     return Observation()->GetUnits(Unit::Alliance::Self, IsUnit(unit_type)).size();
 }
-bool BasicSc2Bot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type = UNIT_TYPEID::TERRAN_SCV) {
+bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type = UNIT_TYPEID::TERRAN_SCV) {
     const ObservationInterface* observation = Observation();
 
     // If a unit already is building a supply structure of this type, do nothing.
@@ -70,7 +70,7 @@ bool BasicSc2Bot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_
     return true;
 }
 
-bool BasicSc2Bot::TryBuildSupplyDepot() {
+bool OrionBot::TryBuildSupplyDepot() {
     const ObservationInterface* observation = Observation();
 
     // If we are not supply capped, don't build a supply depot.
@@ -81,7 +81,7 @@ bool BasicSc2Bot::TryBuildSupplyDepot() {
     return TryBuildStructure(ABILITY_ID::BUILD_SUPPLYDEPOT);
 }
 
-const Unit* BasicSc2Bot::FindNearestMineralPatch(const Point2D& start) {
+const Unit* OrionBot::FindNearestMineralPatch(const Point2D& start) {
     Units units = Observation()->GetUnits(Unit::Alliance::Neutral);
     float distance = std::numeric_limits<float>::max();
     const Unit* target = nullptr;
@@ -97,7 +97,7 @@ const Unit* BasicSc2Bot::FindNearestMineralPatch(const Point2D& start) {
     return target;
 }
 
-bool BasicSc2Bot::TryBuildBarracks() {
+bool OrionBot::TryBuildBarracks() {
     const ObservationInterface* observation = Observation();
 
     if (CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 1) {

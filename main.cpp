@@ -4,7 +4,7 @@
 #include "sc2utils/sc2_manage_process.h"
 #include "sc2utils/sc2_arg_parser.h"
 
-#include "BasicSc2Bot.h"
+#include "OrionBot.h"
 #include "LadderInterface.h"
 
 // LadderInterface allows the bot to be tested against the built-in AI or
@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 	// Coordinator coordinator;
     // coordinator.LoadSettings(argc, argv);
 
-    // BasicSc2Bot bot;
+    // OrionBot bot;
     // coordinator.SetParticipants({
     //     CreateParticipant(Race::Terran, &bot),
     //     CreateComputer(Race::Zerg)
@@ -24,6 +24,6 @@ int main(int argc, char* argv[]) {
 
     // while (coordinator.Update()) {
     // }
-	RunBot(argc, argv, new BasicSc2Bot(), sc2::Race::Terran);
+	RunBot(argc, argv, new OrionBot(), sc2::Race::Terran);
 	return 0;
 }
