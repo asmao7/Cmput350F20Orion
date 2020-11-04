@@ -9,6 +9,8 @@ void OrionBot::OnStep() {
 
     TryBuildBarracks();
 
+    //TryScouting();
+
     TryAttacking();
 }
 void OrionBot::OnUnitIdle(const Unit* unit){
@@ -114,24 +116,42 @@ bool OrionBot::TryBuildBarracks() {
 }
 
 /*
-* check if enemies are within 
-* attack range if yes, then attack
+ * Attacking only if enemy
+ * is in close proximity,
 */
 void OrionBot::TryAttacking() {
     const ObservationInterface* observation = Observation();
 
     Units enemyUnits = observation->GetUnits(Unit::Alliance::Enemy);
     Units selfMarrineUnits = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_MARINE));
+    Units SVCs = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
 
-    int ATTACK_RADIUS = 100;
+    int ATTACK_RADIUS = 60;     // picked randomly, need to find a better way*
     const Point2D& start = observation->GetStartLocation();
     for (const auto& u : enemyUnits) {
-        float d = DistanceSquared2D(u->pos, start);
+        float d = DistanceSquared2D(u->pos, start); 
         if (d <= ATTACK_RADIUS) {
-            std::cout << "TRYING TO ATTACK NOW!" << std::endl;
             const GameInfo& game_info = Observation()->GetGameInfo();
-            Actions()->UnitCommand(selfMarrineUnits, ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
+            //TryScouting();
+            Actions()->UnitCommand(selfMarrineUnits, ABILITY_ID::ATTACK_ATTACK, enemyUnits.front());
+            if (!SVCs.empty()) {
+                Actions()->UnitCommand(SVCs.front(), ABILITY_ID::ATTACK_ATTACK, enemyUnits.front()); // game_info.enemy_start_locations.front());
+            }
         }
     }
 
+}
+
+/*
+ * if SVCs > 10  then scout
+ * 
+*/
+void OrionBot::TryScouting() {
+    const ObservationInterface* observation = Observation();
+    const GameInfo& game_info = Observation()->GetGameInfo();
+    Units SVCs = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
+    if (SVCs.size() > 10) {
+        //Actions()->UnitCommand(SVCs.front(), ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
+        Actions()->UnitCommand(SVCs, ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
+    }
 }
