@@ -6,11 +6,11 @@ void OrionBot::OnGameStart() {
 
 void OrionBot::OnStep() { 
     TryBuildSupplyDepot();
-
+    TryBuildRefinery();
     TryBuildBarracks();
-
-    //TryScouting();
-
+    TryBuildOrbitalCommand();
+    TryBuildFactory();
+    /*TryScouting();*/
     TryAttacking();
 }
 void OrionBot::OnUnitIdle(const Unit* unit){
@@ -21,8 +21,15 @@ void OrionBot::OnUnitIdle(const Unit* unit){
         }
         case UNIT_TYPEID::TERRAN_SCV: {
             const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
+            const Unit* vespene_geyser = FindNearestVespeneGeyser(unit->pos);
             if (!mineral_target) {
                 break;
+            }
+            if (!vespene_geyser) {
+                break;
+            }
+            else {
+                Actions()->UnitCommand(unit, ABILITY_ID::SMART, vespene_geyser);
             }
             Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
             break;
@@ -34,6 +41,10 @@ void OrionBot::OnUnitIdle(const Unit* unit){
         case UNIT_TYPEID::TERRAN_MARINE: {
             const GameInfo& game_info = Observation()->GetGameInfo();
             Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
+            break;
+        }
+        case UNIT_TYPEID::TERRAN_ORBITALCOMMAND: {
+            Actions()->UnitCommand(unit, ABILITY_ID::MORPH_ORBITALCOMMAND);
             break;
         }
         default: {
@@ -85,6 +96,12 @@ bool OrionBot::TryBuildSupplyDepot() {
     return TryBuildStructure(ABILITY_ID::BUILD_SUPPLYDEPOT);
 }
 
+bool OrionBot::TryBuildRefinery() {
+    const ObservationInterface* observation = Observation();
+
+    return TryBuildStructure(ABILITY_ID::BUILD_REFINERY);
+}
+//trybuildgas
 const Unit* OrionBot::FindNearestMineralPatch(const Point2D& start) {
     Units units = Observation()->GetUnits(Unit::Alliance::Neutral);
     float distance = std::numeric_limits<float>::max();
@@ -100,6 +117,28 @@ const Unit* OrionBot::FindNearestMineralPatch(const Point2D& start) {
     }
     return target;
 }
+struct IsVespeneGeyser {
+    bool operator()(const Unit& unit) {
+        switch (unit.unit_type.ToType()) {
+        case UNIT_TYPEID::NEUTRAL_VESPENEGEYSER: return true;
+        default: return false;
+        }
+    }
+};
+const Unit* OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
+    const ObservationInterface* observation = Observation();
+    Units geysers = observation->GetUnits(Unit::Alliance::Neutral, IsVespeneGeyser());
+    float distance = std::numeric_limits<float>::max();
+    const Unit* target = nullptr;
+    for (const auto& u : geysers) {
+        float d = DistanceSquared2D(u->pos, start);
+        if (d < distance) {
+            distance = d;
+            target = u;
+        }
+    }
+    return target;
+}
 
 bool OrionBot::TryBuildBarracks() {
     const ObservationInterface* observation = Observation();
@@ -108,12 +147,39 @@ bool OrionBot::TryBuildBarracks() {
         return false;
     }
 
-    if (CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 0) {
+    if (CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 3) {
+        return false;
+    }
+
+    if (CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 1) {
         return false;
     }
 
     return TryBuildStructure(ABILITY_ID::BUILD_BARRACKS);
 }
+
+bool OrionBot::TryBuildOrbitalCommand() {
+    const ObservationInterface* observation = Observation();
+    if (CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 9) {
+        return false;
+    }
+    if (CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) > 1) {
+        return false;
+    }
+    //Fix
+    return TryBuildStructure(ABILITY_ID::LAND_ORBITALCOMMAND);
+}
+
+bool OrionBot::TryBuildFactory() {
+    const ObservationInterface* observation = Observation();
+    if (CountUnitType(UNIT_TYPEID::TERRAN_SCV) > 12) {
+        return false;
+    }
+    return TryBuildStructure(ABILITY_ID::BUILD_FACTORY);
+}
+
+
+
 
 /*
  * Attacking only if enemy

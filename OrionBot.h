@@ -21,9 +21,15 @@ private:
 	bool TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type);
 	bool TryBuildSupplyDepot();
 	const Unit* FindNearestMineralPatch(const Point2D& start);
+	const Unit* FindNearestVespeneGeyser(const Point2D& start);
 	bool TryBuildBarracks();
+	bool TryBuildRefinery();
+	bool TryBuildAcademy();
+	bool TryBuildOrbitalCommand();
+	bool TryBuildFactory();
 	void TryAttacking();
 	void TryScouting();
+
 };
 
 #endif
