@@ -9,9 +9,6 @@ void OrionBot::OnStep() {
     // build supply depots
     TryBuildSupplyDepot();
 
-    // Build SCVs
-    //TryBuildSCVs();
-
     // Build Barracks 
     TryBuildBarracks();
 
@@ -220,7 +217,8 @@ bool OrionBot::TryBuildFactory() {
 }
 
 /* 
- * TODO!
+ * TODO! 
+ * ~Asma
 */
 bool OrionBot::TryBuildCommandCentre() {
     const ObservationInterface* observation = Observation();
@@ -232,8 +230,10 @@ bool OrionBot::TryBuildCommandCentre() {
 
 
 /*
+ * ~ in progress! 
  * Attacking only if enemy
  * is in close proximity,
+ * ~Asma
 */
 void OrionBot::TryAttacking() {
     const ObservationInterface* observation = Observation();
@@ -259,8 +259,9 @@ void OrionBot::TryAttacking() {
 }
 
 /*
+ * in progress! 
  * if SVCs > 10  then scout
- * 
+ * ~Asma
 */
 void OrionBot::TryScouting() {
     const ObservationInterface* observation = Observation();
@@ -273,7 +274,9 @@ void OrionBot::TryScouting() {
 }
 
 /* 
+ * Utility function for scouting 
  * Find any enemy structures
+ * ~Asma
 */
 bool OrionBot::FindEnemyStructure(const ObservationInterface* observation, const Unit*& enemy_unit) {
     Units my_units = observation->GetUnits(Unit::Alliance::Enemy);
@@ -288,7 +291,10 @@ bool OrionBot::FindEnemyStructure(const ObservationInterface* observation, const
     return false;
 }
 
-// Tries to find a random location that can be pathed to on the map.
+/*
+ * Tries to find a random location that can be pathed to on the map.
+ * ~Asma
+*/
 bool OrionBot::FindEnemyPosition(Point2D& target_pos) {
     const GameInfo& game_info = Observation()->GetGameInfo();
     if (game_info.enemy_start_locations.empty()) {
@@ -298,6 +304,11 @@ bool OrionBot::FindEnemyPosition(Point2D& target_pos) {
     return true;
 }
 
+/*
+ * NOTE: I USED THE API A LOT
+ * WILL CITE PROPERLY LATER
+ * ~Asma
+*/
 
 
 

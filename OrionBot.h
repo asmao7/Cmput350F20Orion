@@ -27,12 +27,9 @@ private:
 	bool TryBuildBarracks();
 	void TryAttacking();
 	void TryScouting();
-	void TryBuild();
 
 	const Unit* FindNearestMineralPatch(const Point2D& start);
 	const bool FindNearestVespeneGeyser(const Point2D& start);
-	bool AddRefineryWorkers();
-	bool TryBuildBarracks();
 	bool AddRefineryWorkers();
 	bool TryBuildAcademy();
 	bool TryBuildOrbitalCommand();
