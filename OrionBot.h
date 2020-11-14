@@ -7,6 +7,7 @@
 #include "sc2utils/sc2_manage_process.h"
 #include "sc2utils/sc2_arg_parser.h"
 #include "sc2api/sc2_unit_filters.h"
+#include <iostream>
 
 using namespace sc2;
 
@@ -19,11 +20,13 @@ public:
 private:
 	size_t CountUnitType(UNIT_TYPEID unit_type);
 	bool TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type);
+	bool TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, Tag location_tag, UNIT_TYPEID unit_type);
 	bool TryBuildSupplyDepot();
 	const Unit* FindNearestMineralPatch(const Point2D& start);
-	const Unit* FindNearestVespeneGeyser(const Point2D& start);
+	const bool FindNearestVespeneGeyser(const Point2D& start);
+	bool AddRefineryWorkers();
 	bool TryBuildBarracks();
-	bool TryBuildRefinery();
+	bool AddRefineryWorkers();
 	bool TryBuildAcademy();
 	bool TryBuildOrbitalCommand();
 	bool TryBuildFactory();
