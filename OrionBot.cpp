@@ -12,6 +12,7 @@ void OrionBot::OnStep() {
     /*TryBuildFactory();*/ //Works
     /*TryScouting();*/
     TryAttacking();
+    /*std::cout << refinery_list.size() << std::endl;*/
 }
 
 void OrionBot::OnUnitIdle(const Unit* unit) {
@@ -27,6 +28,9 @@ void OrionBot::OnUnitIdle(const Unit* unit) {
             break;
         }
         if (vespene_target) {
+            break;
+        }
+        if (AddWorkersToRefineries(unit)) {
             break;
         }
         Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
@@ -76,7 +80,6 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
     Actions()->UnitCommand(unit_to_build,
         ability_type_for_structure,
         Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
-
     return true;
 }
 bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, Tag location_tag, UNIT_TYPEID unit_type = UNIT_TYPEID::TERRAN_SCV) {
@@ -103,6 +106,7 @@ bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, 
     // Check to see if unit can build there
     if (Query()->Placement(ability_type_for_structure, target->pos)) {
         Actions()->UnitCommand(unit, ability_type_for_structure, target);
+        refinery_list.push_back(location_tag);
         return true;
     }
     return false;
@@ -161,11 +165,29 @@ const bool OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
     }
     return TryBuildStructureTargeted(ABILITY_ID::BUILD_REFINERY,closestGeyser);
 }
-
-//Build a refinery.
-//Made by: Joe
-bool OrionBot::AddRefineryWorkers() {
+bool OrionBot::AddWorkersToRefineries(const Unit* unit) {
+    /*if (!refinery_list.empty()) {
+        std::cout << "try" << std::endl;
+        size_t refinery_workers = CountUnitType(UNIT_TYPEID::TERRAN_REFINERY);
+        size_t max_workers = refinery_list.size() * 3;
+        if (refinery_workers < max_workers) {
+            for (const auto& x : refinery_list) {
+                const Unit* target = Observation()->GetUnit(x);
+                Actions()->UnitCommand(unit, ABILITY_ID::HARVEST_GATHER, target);
+                return true;
+            }
+        }
+    }
+    return false;*/
     const ObservationInterface* observation = Observation();
+    Units geysers = observation->GetUnits(Unit::Alliance::Self, IsVisibleGeyser());
+    for (const auto& geyser : geysers) {
+        if (geyser->assigned_harvesters < geyser->ideal_harvesters) {
+            Actions()->UnitCommand(unit, ABILITY_ID::HARVEST_GATHER, geyser);
+            return true;
+        }
+    }
+    return false;
 }
 
 bool OrionBot::TryBuildBarracks() {

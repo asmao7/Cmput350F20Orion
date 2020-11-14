@@ -8,6 +8,7 @@
 #include "sc2utils/sc2_arg_parser.h"
 #include "sc2api/sc2_unit_filters.h"
 #include <iostream>
+#include <vector>
 
 using namespace sc2;
 
@@ -24,15 +25,15 @@ private:
 	bool TryBuildSupplyDepot();
 	const Unit* FindNearestMineralPatch(const Point2D& start);
 	const bool FindNearestVespeneGeyser(const Point2D& start);
-	bool AddRefineryWorkers();
 	bool TryBuildBarracks();
-	bool AddRefineryWorkers();
 	bool TryBuildAcademy();
+	bool AddWorkersToRefineries(const Unit* unit);
 	bool TryBuildOrbitalCommand();
 	bool TryBuildFactory();
 	void TryAttacking();
 	void TryScouting();
 
+	mutable std::vector<Tag> refinery_list;
 };
 
 #endif
