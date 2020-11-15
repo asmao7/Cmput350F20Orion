@@ -24,6 +24,7 @@ private:
 	bool TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type);
 	bool TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, Tag location_tag, UNIT_TYPEID unit_type);
 	bool TryBuildSupplyDepot();
+	bool TryBuildRefinery();
 	bool TryBuildBarracks();
 	void TryAttacking();
 	void TryScouting();
@@ -43,7 +44,7 @@ private:
 
 	bool FindEnemyStructure(const ObservationInterface* observation, const Unit*& enemy_unit);
 	bool FindEnemyPosition(Point2D& target_pos);
-	
+
 
 };
 

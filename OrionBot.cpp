@@ -1,15 +1,15 @@
 #include "OrionBot.h"
 
-void OrionBot::OnGameStart() { 
+void OrionBot::OnGameStart() {
     std::cout << "Hello, World!" << std::endl;
 }
 
-void OrionBot::OnStep() { 
+void OrionBot::OnStep() {
 
     // build supply depots
     TryBuildSupplyDepot();
 
-    // Build Barracks 
+    // Build Barracks
     TryBuildBarracks();
 
     // build as much marines while possible
@@ -78,13 +78,19 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
     float rx = GetRandomScalar();
     float ry = GetRandomScalar();
 
+    if (ability_type_for_structure == ABILITY_ID::BUILD_SUPPLYDEPOT && CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) == 0) {
+			BuildSupplyDepot(unit_to_build);
+		}
+
     Actions()->UnitCommand(unit_to_build,
         ability_type_for_structure,
         Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
 
     return true;
 }
-bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, Tag location_tag, UNIT_TYPEID unit_type = UNIT_TYPEID::TERRAN_SCV) {
+
+bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure,
+  Tag location_tag, UNIT_TYPEID unit_type = UNIT_TYPEID::TERRAN_SCV) {
     const ObservationInterface* observation = Observation();
     Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(unit_type));
     const Unit* target = observation->GetUnit(location_tag);
@@ -113,21 +119,58 @@ bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, 
     return false;
 }
 
-bool OrionBot::TryBuildSupplyDepot() {
+/* from bot_examples.cc line 2904 - 2922
+* debbie
+ to be modified */
+
+bool OrionBot::TryBuildRefinery() {
     const ObservationInterface* observation = Observation();
-    
-    // If we are not supply capped, don't build a supply depot.
-    if (observation->GetFoodUsed() <= observation->GetFoodCap() - 2)
+    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+
+    if (CountUnitType(observation, UNIT_TYPEID::TERRAN_REFINERY) >= observation->GetUnits(Unit::Alliance::Self, IsTownHall()).size() * 2) {
         return false;
+    }
 
-    // cost for building depot = 100 minerals
-    //if (observation->GetMinerals() < 100) {
-     //   return false;
-    //}
+    for (const auto& base : bases) {
+        if (base->assigned_harvesters >= base->ideal_harvesters) {
+            if (base->build_progress == 1) {
+                if (TryBuildGas(ABILITY_ID::BUILD_REFINERY, UNIT_TYPEID::TERRAN_SCV, base->pos)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
-    // Try and build a depot. Find a random SCV and give it the order.
-    return TryBuildStructure(ABILITY_ID::BUILD_SUPPLYDEPOT);
-    
+bool OrionBot::TryBuildSupplyDepot() {
+  const ObservationInterface* observation = Observation();
+
+  // If we are not supply capped, don't build a supply depot.
+  if (observation->GetFoodUsed() < observation->GetFoodCap() - 6) {
+     return false;
+  }
+
+  if (observation->GetMinerals() < 100) {
+     return false;
+  }
+
+  //check to see if there is already on building
+  Units units = observation->GetUnits(Unit::Alliance::Self, IsUnits(supply_depot_types));
+  if (observation->GetFoodUsed() < 40) {
+     for (const auto& unit : units) {
+         if (unit->build_progress != 1) {
+             return false;
+         }
+     }
+  }
+
+  // Try and build a supply depot. Find a random SCV and give it the order.
+  float rx = GetRandomScalar();
+  float ry = GetRandomScalar();
+  Point2D build_location = Point2D(staging_location_.x + rx * 15, staging_location_.y + ry * 15);
+  return TryBuildStructure(ABILITY_ID::BUILD_SUPPLYDEPOT, UNIT_TYPEID::TERRAN_SCV, build_location);
+
 }
 
 bool OrionBot::TryBuildBarracks() {
@@ -148,6 +191,20 @@ bool OrionBot::TryBuildBarracks() {
     return TryBuildStructure(ABILITY_ID::BUILD_BARRACKS);
 }
 
+/* example code from bot_example.cc
+* to be modified and called
+*debbie
+*/
+bool OrionBot::TryBuildSCVs() {
+    if (CountUnitType(Observation(), UNIT_TYPEID::TERRAN_SCV) >= TargetSCVCount)
+        return false;
+
+    return TryBuildUnit(ABILITY_ID::TRAIN_SCV, UNIT_TYPEID::TERRAN_COMMANDCENTER);
+}
+
+bool OrionBot::TryBuildMarine() {
+    return TryBuildUnit(ABILITY_ID::TRAIN_MARINE, UNIT_TYPEID::TERRAN_BARRACKS);
+}
 
 
 //
@@ -224,7 +281,8 @@ bool OrionBot::TryBuildMarine() {
     //return TryBuildUnit(ABILITY_ID::TRAIN_MARINE, UNIT_TYPEID::TERRAN_BARRACKS);
     const ObservationInterface* observation = Observation();
     //If we are at supply cap, don't build anymore units, unless its an overlord.
-    if (observation->GetFoodUsed() >= observation->GetFoodCap() && ABILITY_ID::TRAIN_MARINE != ABILITY_ID::TRAIN_OVERLORD) {
+    if (observation->GetFoodUsed() >= observation->GetFoodCap()
+    && ABILITY_ID::TRAIN_MARINE != ABILITY_ID::TRAIN_OVERLORD) {
         return false;
     }
     const Unit* unit = nullptr;
@@ -235,21 +293,19 @@ bool OrionBot::TryBuildMarine() {
             if (!unit->orders.empty()) {
                 return false;
             }
-
             if (unit->build_progress != 1) {
                 return false;
             }
-
             Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);
             return true;
         }
     }
     return false;
-   
+
 }
 
-/* 
- * TODO! 
+/*
+ * TODO!
  * ~Asma
 */
 bool OrionBot::TryBuildCommandCentre() {
@@ -262,7 +318,7 @@ bool OrionBot::TryBuildCommandCentre() {
 
 
 /*
- * ~ in progress! 
+ * ~ in progress!
  * Attacking only if enemy
  * is in close proximity,
  * ~Asma
@@ -277,13 +333,13 @@ void OrionBot::TryAttacking() {
     int ATTACK_RADIUS = 30;     // picked randomly, need to find a better way*
     const Point3D& start = observation->GetStartLocation();
     for (const auto& u : enemyUnits) {
-        float d = DistanceSquared2D(u->pos, Point2D(start.x, start.y));//baseUnit->pos); 
+        float d = DistanceSquared2D(u->pos, Point2D(start.x, start.y));//baseUnit->pos);
         if (d <= ATTACK_RADIUS) {
             const GameInfo& game_info = Observation()->GetGameInfo();
             //TryScouting();
             Actions()->UnitCommand(selfMarrineUnits, ABILITY_ID::ATTACK_ATTACK, u);  //enemyUnits.front());
             if (!SVCs.empty()) {
-                Actions()->UnitCommand(SVCs, ABILITY_ID::ATTACK_ATTACK, u); // game_info.enemy_start_locations.front()); // enemyUnits.front()); // 
+                Actions()->UnitCommand(SVCs, ABILITY_ID::ATTACK_ATTACK, u); // game_info.enemy_start_locations.front()); // enemyUnits.front()); //
             }
         }
     }
@@ -291,7 +347,7 @@ void OrionBot::TryAttacking() {
 }
 
 /*
- * in progress! 
+ * in progress!
  * if SVCs > 10  then scout
  * ~Asma
 */
@@ -305,8 +361,8 @@ void OrionBot::TryScouting() {
     }
 }
 
-/* 
- * Utility function for scouting 
+/*
+ * Utility function for scouting
  * Find any enemy structures
  * ~Asma
 */
@@ -335,13 +391,3 @@ bool OrionBot::FindEnemyPosition(Point2D& target_pos) {
     target_pos = game_info.enemy_start_locations.front();
     return true;
 }
-
-/*
- * NOTE: I USED THE API A LOT
- * WILL CITE PROPERLY LATER
- * ~Asma
-*/
-
-
-
-
