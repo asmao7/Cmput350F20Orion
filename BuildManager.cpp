@@ -52,19 +52,38 @@ const bool OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
     return TryBuildStructureTargeted(ABILITY_ID::BUILD_REFINERY,closestGeyser);
 }
 
-
-//Try to build factory, once we have 9 supply depots.
-//Made by: Joe
+/*
+//Made by: Ana
 bool OrionBot::TryBuildOrbitalCommand() {
     const ObservationInterface* observation = Observation();
-    if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 9) {
+
+    if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) >= 1) {
         return false;
     }
-    if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) > 1) {
-        return false;
+    
+    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+    for (const auto& base : bases) {
+        if (base->unit_type == UNIT_TYPEID::TERRAN_ORBITALCOMMAND && base->energy > 150) {
+            // upgrade Orbital command
+
+        }
     }
-    //Fix
-    return OrionBot::TryBuildStructure(ABILITY_ID::LAND_ORBITALCOMMAND);
+    //return OrionBot::TryBuildStructure(ABILITY_ID::LAND_ORBITALCOMMAND);
+}
+*/
+
+// Made by Ana
+void OrionBot::TryBuildOrbitalCommand() {
+    const ObservationInterface* observation = Observation();
+    Units bases = observation->GetUnits(Unit::Self, IsTownHall());
+    //Units barracks = observation->GetUnits(Unit::Self, IsUnits(barrack_types));
+
+    for (const auto& base : bases) {
+        if (base->unit_type == UNIT_TYPEID::TERRAN_COMMANDCENTER && observation->GetMinerals() > 150) {
+            Actions()->UnitCommand(base, ABILITY_ID::MORPH_ORBITALCOMMAND);
+            return;
+        }
+    }
 }
 
 //Try to build factory, once we have 12 SCVs

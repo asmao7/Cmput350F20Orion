@@ -5,19 +5,26 @@ void OrionBot::OnGameStart() {
 }
 
 void OrionBot::OnStep() { 
-
     // build supply depots
     TryBuildSupplyDepot();
 
     // Build Barracks 
     TryBuildBarracks();
-
+    
+    // Upgrade to Orbital Command
+    TryBuildOrbitalCommand();
+    
 }
 
 void OrionBot::OnUnitIdle(const Unit* unit) {
     switch (unit->unit_type.ToType()) {
     case UNIT_TYPEID::TERRAN_COMMANDCENTER: {
-        Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SCV);
+        if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SCV) < 25) {
+            Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SCV);
+        }
+        
+
+        //Actions()->UnitCommand(unit, ABILITY_ID::MORPH_ORBITALCOMMAND);
         break;
     }
     case UNIT_TYPEID::TERRAN_SCV: {
@@ -92,6 +99,9 @@ bool OrionBot::TryBuildSupplyDepot() {
     //if (observation->GetMinerals() < 100) {
      //   return false;
     //}
+    if (CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 3) {  // SO we don't build too many supply depots
+        return false;
+    }
 
     // Try and build a depot. Find a random SCV and give it the order.
     return TryBuildStructure(ABILITY_ID::BUILD_SUPPLYDEPOT);
@@ -108,10 +118,10 @@ bool OrionBot::TryBuildBarracks() {
     if (CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 3) {
         return false;
     }
-
+    /*
     if (CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 1) {
         return false;
-    }
+    }*/
 
     return TryBuildStructure(ABILITY_ID::BUILD_BARRACKS);
 }
