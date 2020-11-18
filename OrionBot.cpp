@@ -2,6 +2,7 @@
 
 void OrionBot::OnGameStart() { 
     std::cout << "Hello, World!" << std::endl;
+
 }
 
 void OrionBot::OnStep() { 
