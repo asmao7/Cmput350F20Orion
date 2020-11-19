@@ -66,10 +66,9 @@ void OrionBot::BansheeBuild() {
 			@100 % Hellion(1) - Tech Lab(1) > Banshees(to 2)
 			23 - Refinery(2) + Supply Depot*/
 			BANSHEE_STATE.orbital_upgrade = false;
+			OrionBot::TryBuildSupplyDepot();
 			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) < 1) {
 				OrionBot::TryBuildCommandCentre();
-			}
-			if (Observation()->GetMinerals() >= 100) {
 				OrionBot::TryBuildSupplyDepot();
 			}
 			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1) {
@@ -189,14 +188,17 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 		if (BANSHEE_STATE.morph_reactor) {
 			Actions()->UnitCommand(unit, ABILITY_ID::BARRACKSREACTORMORPH_REACTOR);
 		}
-		if (BANSHEE_STATE.current_build < STAGE4_BANSHEE) {
+		else {
+			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);
+		}
+		/*if (BANSHEE_STATE.current_build < STAGE4_BANSHEE) {
 			if (BANSHEE_STATE.morph_reactor == false) {
 				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);
 			}
 		}
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_REAPER);
-		}
+		}*/
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_FACTORY: {
