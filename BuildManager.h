@@ -19,6 +19,5 @@ const Unit* baseUnit = NULL;
 
 bool FindEnemyStructure(const ObservationInterface* observation, const Unit*& enemy_unit);
 bool FindEnemyPosition(Point2D& target_pos);
-	
 
 std::vector<Tag> refinery_list;

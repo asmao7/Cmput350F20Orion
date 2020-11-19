@@ -68,6 +68,39 @@ bool OrionBot::TryBuildFactory() {
 bool OrionBot::TryBuildStarport() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_STARPORT);
 }
+/*
+//Made by: Ana
+bool OrionBot::TryBuildOrbitalCommand() {
+    const ObservationInterface* observation = Observation();
+
+    if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) >= 1) {
+        return false;
+    }
+    
+    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+    for (const auto& base : bases) {
+        if (base->unit_type == UNIT_TYPEID::TERRAN_ORBITALCOMMAND && base->energy > 150) {
+            // upgrade Orbital command
+
+        }
+    }
+    //return OrionBot::TryBuildStructure(ABILITY_ID::LAND_ORBITALCOMMAND);
+}
+*/
+
+// Made by Ana
+void OrionBot::TryBuildOrbitalCommand() {
+    const ObservationInterface* observation = Observation();
+    Units bases = observation->GetUnits(Unit::Self, IsTownHall());
+    //Units barracks = observation->GetUnits(Unit::Self, IsUnits(barrack_types));
+
+    for (const auto& base : bases) {
+        if (base->unit_type == UNIT_TYPEID::TERRAN_COMMANDCENTER && observation->GetMinerals() > 150) {
+            Actions()->UnitCommand(base, ABILITY_ID::MORPH_ORBITALCOMMAND);
+            return;
+        }
+    }
+}
 
 //Add SCVs to refineries.
 //Reason is so that refineries are at max efficiency (3 SCVs)
