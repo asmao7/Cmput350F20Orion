@@ -1,5 +1,9 @@
 #include "OrionBot.h"
 
+//Taken from Blizzard Sc2 Example Library
+//Builds a structure at given location.
+//Takes in a point.
+//Made by: Joe
 bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, Tag location_tag, UNIT_TYPEID unit_type = UNIT_TYPEID::TERRAN_SCV) {
     const ObservationInterface* observation = Observation();
     Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(unit_type));
@@ -30,6 +34,7 @@ bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, 
 }
 
 //Find nearest vespene geyser to the scv.
+//Adapted from find nearest minerals function.
 //Takes in a point.
 //Made by: Joe
 const bool OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
@@ -52,6 +57,17 @@ const bool OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
     return TryBuildStructureTargeted(ABILITY_ID::BUILD_REFINERY,closestGeyser);
 }
 
+//Try to build factory
+//Made by: Joe
+bool OrionBot::TryBuildFactory() {
+    return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_FACTORY);
+}
+
+//Try to build starport
+//Made by: Joe
+bool OrionBot::TryBuildStarport() {
+    return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_STARPORT);
+}
 /*
 //Made by: Ana
 bool OrionBot::TryBuildOrbitalCommand() {
@@ -86,14 +102,19 @@ void OrionBot::TryBuildOrbitalCommand() {
     }
 }
 
-//Try to build factory, once we have 12 SCVs
+//Add SCVs to refineries.
+//Reason is so that refineries are at max efficiency (3 SCVs)
 //Made by: Joe
-bool OrionBot::TryBuildFactory() {
+bool OrionBot::AddWorkersToRefineries(const Unit* unit) {
     const ObservationInterface* observation = Observation();
-    if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SCV) > 12) {
-        return false;
+    Units geysers = observation->GetUnits(Unit::Alliance::Self, IsVisibleGeyser());
+    for (const auto& geyser : geysers) {
+        if (geyser->assigned_harvesters < geyser->ideal_harvesters) {
+            Actions()->UnitCommand(unit, ABILITY_ID::HARVEST_GATHER, geyser);
+            return true;
+        }
     }
-    return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_FACTORY);
+    return false;
 }
 
 /*

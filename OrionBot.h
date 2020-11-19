@@ -26,8 +26,40 @@ private:
 	const Unit* FindNearestMineralPatch(const Point2D& start);
 	bool TryBuildSupplyDepot();
 	bool TryBuildBarracks();
+
+	//Global State Tracker
+	//Lets us know what strategy we are playing
+	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX };
+	int RUSH_STRATEGY = RUSH_BANSHEE;
+
+	//6Rax Rush Strategy Variables
+
+
+	//12 Marines Rush Strategy Variables
+
+
+	//Banshee Rush Strategy Variables
+	//Made by: Joe
+	struct Banshee {
+		Banshee() :
+			orbital_upgrade(false), produce_hellion(false), produce_banshee(false), 
+			morph_techlab(false), morph_reactor(false), current_build(0)
+		{
+		}
+		bool orbital_upgrade;
+		bool produce_hellion;
+		bool produce_banshee;
+		bool morph_techlab;
+		bool morph_reactor;
+		int current_build;
+	};
+	Banshee BANSHEE_STATE;
+	enum Banshee_Strategy { STAGE1_BANSHEE = 0, STAGE2_BANSHEE, STAGE3_BANSHEE, STAGE4_BANSHEE };
+
 	#include "BuildManager.h"
-	
+	#include "Banshee.h"
+	#include "Rax6.h"
+	#include "Marines12.h"
 };
 
 #endif

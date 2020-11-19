@@ -5,59 +5,42 @@ void OrionBot::OnGameStart() {
 }
 
 void OrionBot::OnStep() { 
-    // build supply depots
-    TryBuildSupplyDepot();
-
-    // Build Barracks 
-    TryBuildBarracks();
-    
-    // Upgrade to Orbital Command
-    TryBuildOrbitalCommand();
-    
+    OrionBot::BansheeBuild();
+    switch (RUSH_STRATEGY) {
+    case RUSH_BANSHEE: {
+        OrionBot::BansheeBuild();
+        break;
+    }
+    case RUSH_12MARINES: {
+        break;
+    }
+    case RUSH_6RAX: {
+        break;
+    }
+    }
 }
 
 void OrionBot::OnUnitIdle(const Unit* unit) {
-    switch (unit->unit_type.ToType()) {
-    case UNIT_TYPEID::TERRAN_COMMANDCENTER: {
-        if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SCV) < 25) {
-            Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SCV);
-        }
-        
-
-        //Actions()->UnitCommand(unit, ABILITY_ID::MORPH_ORBITALCOMMAND);
+    switch (RUSH_STRATEGY) {
+    case RUSH_BANSHEE: {
+        OrionBot::BansheeOnUnitIdle(unit);
         break;
     }
-    case UNIT_TYPEID::TERRAN_SCV: {
-        const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
-        // const bool vespene_target = FindNearestVespeneGeyser(unit->pos);
-        if (!mineral_target) {
-            break;
-        }
-        // if (vespene_target) {
-        //     break;
-        // }
-        Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
+    case RUSH_12MARINES: {
         break;
     }
-    case UNIT_TYPEID::TERRAN_BARRACKS: {
-        Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);
-        break;
-    }
-    case UNIT_TYPEID::TERRAN_MARINE: {
-        const GameInfo& game_info = Observation()->GetGameInfo();
-        Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
-        break;
-    }
-    default: {
+    case RUSH_6RAX: {
         break;
     }
     }
 }
 
+// From Sc2 Cpp Tutorial
 size_t OrionBot::CountUnitType(UNIT_TYPEID unit_type) {
     return Observation()->GetUnits(Unit::Alliance::Self, IsUnit(unit_type)).size();
 }
 
+// From Sc2 Cpp Tutorial
 bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
     const ObservationInterface* observation = Observation();
 
@@ -65,6 +48,7 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
     // Also get an scv to build the structure.
     const Unit* unit_to_build = nullptr;
     Units units = observation->GetUnits(Unit::Alliance::Self);
+    Units bases = observation->GetUnits(Unit::Alliance::Self,IsTownHall());
     for (const auto& unit : units) {
         for (const auto& order : unit->orders) {
             if (order.ability_id == ability_type_for_structure) {
@@ -79,35 +63,33 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
 
     float rx = GetRandomScalar();
     float ry = GetRandomScalar();
-
-    Actions()->UnitCommand(unit_to_build,
-        ability_type_for_structure,
-        Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
-
+    if (!bases.empty()) {
+        Actions()->UnitCommand(unit_to_build,
+            ability_type_for_structure,
+            Point2D(bases.front()->pos.x + rx * 15.0f, bases.front()->pos.y + ry * 15.0f));
+    }
+    else {
+        Actions()->UnitCommand(unit_to_build,
+            ability_type_for_structure,
+            Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
+    }
     return true;
 }
 
-
+// From Sc2 Cpp Tutorial
 bool OrionBot::TryBuildSupplyDepot() {
     const ObservationInterface* observation = Observation();
-    
+
     // If we are not supply capped, don't build a supply depot.
     if (observation->GetFoodUsed() <= observation->GetFoodCap() - 2)
         return false;
 
-    // cost for building depot = 100 minerals
-    //if (observation->GetMinerals() < 100) {
-     //   return false;
-    //}
-    if (CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 3) {  // SO we don't build too many supply depots
-        return false;
-    }
-
     // Try and build a depot. Find a random SCV and give it the order.
     return TryBuildStructure(ABILITY_ID::BUILD_SUPPLYDEPOT);
-    
 }
 
+// From Sc2 Cpp Tutorial
+// Modified Slightly
 bool OrionBot::TryBuildBarracks() {
     const ObservationInterface* observation = Observation();
 
@@ -115,20 +97,12 @@ bool OrionBot::TryBuildBarracks() {
         return false;
     }
 
-    if (CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 3) {
-        return false;
-    }
-    /*
-    if (CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 1) {
-        return false;
-    }*/
-
     return TryBuildStructure(ABILITY_ID::BUILD_BARRACKS);
 }
 
 
 
-//
+// From Sc2 Cpp Tutorial
 const Unit* OrionBot::FindNearestMineralPatch(const Point2D& start) {
     Units units = Observation()->GetUnits(Unit::Alliance::Neutral);
     float distance = std::numeric_limits<float>::max();

@@ -7,10 +7,9 @@ bool AddWorkersToRefineries(const Unit* unit);
 bool TryBuildFactory();
 void TryAttacking();
 void TryScouting();
-//bool TryBuildOrbitalCommand();
+void TryBuildOrbitalCommand();
 bool TryBuildStarport();
 bool TryBuildHellion();
-bool TryBuildCommandCenter();
 bool TryBuildSCVs();
 bool TryBuildMarine();
 
@@ -20,7 +19,5 @@ const Unit* baseUnit = NULL;
 
 bool FindEnemyStructure(const ObservationInterface* observation, const Unit*& enemy_unit);
 bool FindEnemyPosition(Point2D& target_pos);
-	
-void TryBuildOrbitalCommand();
 
-mutable std::vector<Tag> refinery_list;
+std::vector<Tag> refinery_list;
