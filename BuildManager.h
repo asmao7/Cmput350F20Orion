@@ -10,7 +10,6 @@ void TryScouting();
 void TryBuildOrbitalCommand();
 bool TryBuildStarport();
 bool TryBuildHellion();
-bool TryBuildCommandCenter();
 bool TryBuildSCVs();
 bool TryBuildMarine();
 
