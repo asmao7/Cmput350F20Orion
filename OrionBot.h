@@ -37,8 +37,9 @@ private:
 	//Made by: Asma
 	struct Rax6 {
 		Rax6() :
-			upgradeOrbital(false), currentBuild(0) {}
+			upgradeOrbital(false), newCommandCentre(false), currentBuild(0) {}
 		bool upgradeOrbital;
+		bool newCommandCentre;
 		int currentBuild;
 	};
 	Rax6 RAX6_STATE;

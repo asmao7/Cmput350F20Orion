@@ -47,11 +47,23 @@ void OrionBot::Rax6Build() {
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 0) {
 			RAX6_STATE.upgradeOrbital = true;
+		}
+		
+		if (CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) > 0) {
+			RAX6_STATE.upgradeOrbital = false;
+			//RAX6_STATE.newCommandCentre = true;
 			RAX6_STATE.currentBuild++;
 		}
 		break;
 
 	case STAGE2_RAX6:
+		TryBuildCommandCentreChokeP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
+		//if (CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) == 2) {
+			//RAX6_STATE.currentBuild++;
+		//}
+		break;
+
+	case STAGE3_RAX6:
 		TryBuildSupplyDepot();
 		TryBuildBarracks();
 		TryBuildMarine();
@@ -61,14 +73,24 @@ void OrionBot::Rax6Build() {
 void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 	switch (unit->unit_type.ToType()) {
 	case UNIT_TYPEID::TERRAN_COMMANDCENTER: {
+		/*
+		if (RAX6_STATE.newCommandCentre) {
+			//call build on choke point
+			TryBuildCommandCentreChokeP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
+			RAX6_STATE.newCommandCentre = false;
+		}*/
+
 		if (RAX6_STATE.upgradeOrbital) {
 			Actions()->UnitCommand(unit, ABILITY_ID::MORPH_ORBITALCOMMAND);
+			
 			// call build on choke point
-			TryBuildCommandCentreChokeP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
+			//TryBuildCommandCentreChokeP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
 		}
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SCV);
 		}
+
+		
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_ORBITALCOMMAND: {
@@ -197,6 +219,7 @@ bool OrionBot::TryBuildCommandCentreChokeP(ABILITY_ID ability_type_for_structure
 		ability_type_for_structure,
 		Point2D(rx, ry));
 
+	RAX6_STATE.currentBuild++;
 	return true;
 
 }
