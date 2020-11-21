@@ -9,24 +9,20 @@
 
 	STAGE 2
 	11 - Barracks (1)
+
+	STAGE 3
 	Stop producing SCVs
 	13 - Orbital Command Upgrade
 
-	If have enough resources:
-		@100% Orbital Command - Calldown: Extra Supplies (1)
-		then Calldown: MULE
-		then  Scanner Sweep (in the corners)
-
-	STAGE 3
+	STAGE 4
 	12 - Marines
 	12 - Barracks (2-3)
-	Stop producing SCVs
 
 	If have enough resources:
 		then Calldown: MULE
 		then  Scanner Sweep (in the corners)
 		
-	STAGE 4
+	STAGE 5 ATTACK
 	Attack
 */
 
@@ -39,6 +35,18 @@ void OrionBot::Marines12Build() {
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
 			MARINES12_STATE.current_build++;
 		}
+		break;
+
+	case STAGE2_MARINES:
+		if (Observation()->GetMinerals() >= 150) {
+			OrionBot::TryBuildBarracks();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 0) {
+			MARINES12_STATE.current_build++;
+		}
+		break;
+
+
 	}
 }
 

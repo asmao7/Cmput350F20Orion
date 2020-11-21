@@ -58,13 +58,17 @@ private:
 	enum Banshee_Strategy { STAGE1_BANSHEE = 0, STAGE2_BANSHEE, STAGE3_BANSHEE, STAGE4_BANSHEE };
 
 	struct Marines12 {
-		Marines12() : current_build(0)
+		Marines12() : orbital_upgrade(false), produce_scv(true), current_build(0),
+					produce_marine(false)
 		{}
 		int current_build;
+		bool orbital_upgrade;
+		bool produce_scv;
+		bool produce_marine;
 	};
 
 	Marines12 MARINES12_STATE;
-	enum Marines12_Strategy { STAGE1_MARINES = 0, STAGE2_MARINES, STAGE3_MARINES, STAGE4_MARINES };
+	enum Marines12_Strategy { STAGE1_MARINES = 0, STAGE2_MARINES, STAGE3_MARINES, STAGE4_MARINES, STAGE5_ATTACK_MARINES };
 	#include "BuildManager.h"
 	#include "Banshee.h"
 	#include "Rax6.h"
