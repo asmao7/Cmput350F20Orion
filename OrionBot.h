@@ -59,16 +59,17 @@ private:
 
 	struct Marines12 {
 		Marines12() : orbital_upgrade(false), produce_scv(true), current_build(0),
-					produce_marine(false)
+					produce_marine(false), orbital_command_upgraded(false)
 		{}
 		int current_build;
 		bool orbital_upgrade;
 		bool produce_scv;
 		bool produce_marine;
+		bool orbital_command_upgraded;
 	};
 
 	Marines12 MARINES12_STATE;
-	enum Marines12_Strategy { STAGE1_MARINES = 0, STAGE2_MARINES, STAGE3_MARINES, STAGE4_MARINES, STAGE5_ATTACK_MARINES };
+	enum Marines12_Strategy { STAGE1_MARINES = 0, STAGE2_MARINES, STAGE3_MARINES, STAGE4_ATTACK_MARINES };
 	#include "BuildManager.h"
 	#include "Banshee.h"
 	#include "Rax6.h"
