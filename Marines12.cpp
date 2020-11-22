@@ -52,5 +52,5 @@ void OrionBot::Marines12Build() {
 }
 
 void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
-	std::cout << "hello5";
+	
 }
