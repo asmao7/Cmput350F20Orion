@@ -68,25 +68,7 @@ bool OrionBot::TryBuildFactory() {
 bool OrionBot::TryBuildStarport() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_STARPORT);
 }
-/*
-//Made by: Ana
-bool OrionBot::TryBuildOrbitalCommand() {
-    const ObservationInterface* observation = Observation();
 
-    if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) >= 1) {
-        return false;
-    }
-    
-    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
-    for (const auto& base : bases) {
-        if (base->unit_type == UNIT_TYPEID::TERRAN_ORBITALCOMMAND && base->energy > 150) {
-            // upgrade Orbital command
-
-        }
-    }
-    //return OrionBot::TryBuildStructure(ABILITY_ID::LAND_ORBITALCOMMAND);
-}
-*/
 
 // Made by Ana
 void OrionBot::TryBuildOrbitalCommand() {

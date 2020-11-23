@@ -32,6 +32,7 @@ private:
 	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX };
 	//int RUSH_STRATEGY = RUSH_BANSHEE;
 	int RUSH_STRATEGY = RUSH_6RAX;
+	//int RUSH_STRATEGY = RUSH_12MARINES;
 
 	//6Rax Rush Strategy Variables
 	//Made by: Asma
@@ -68,9 +69,19 @@ private:
 	Banshee BANSHEE_STATE;
 	enum Banshee_Strategy { STAGE1_BANSHEE = 0, STAGE2_BANSHEE, STAGE3_BANSHEE, STAGE4_BANSHEE };
 
+	struct Marines12 {
+		Marines12() : orbital_upgrade(false), produce_scv(true), current_build(0),
+					produce_marine(false), orbital_command_upgraded(false)
+		{}
+		int current_build;
+		bool orbital_upgrade;
+		bool produce_scv;
+		bool produce_marine;
+		bool orbital_command_upgraded;
+	};
 
-	
-
+	Marines12 MARINES12_STATE;
+	enum Marines12_Strategy { STAGE1_MARINES = 0, STAGE2_MARINES, STAGE3_MARINES, STAGE4_ATTACK_MARINES };
 	#include "BuildManager.h"
 	#include "Banshee.h"
 	#include "Rax6.h"
