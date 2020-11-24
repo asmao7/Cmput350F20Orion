@@ -82,10 +82,12 @@ void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
 		const GameInfo& game_info = Observation()->GetGameInfo();
 		
 		if (MARINES12_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
-			// send csv to one of the corners
-			
-			Actions()->UnitCommand(unit, ABILITY_ID::MOVE_MOVE, game_info.enemy_start_locations[MARINES12_STATE.num_units_scouting]);
+			// send csv to one of the corners and save base location to possible_enemy_bases
+			Point2D location = game_info.enemy_start_locations[MARINES12_STATE.num_units_scouting];
+			Actions()->UnitCommand(unit, ABILITY_ID::MOVE_MOVE, location);
 
+			possible_enemy_bases.push_back(location);
+			enemyBaseValue.push_back(0);
 			MARINES12_STATE.num_units_scouting++;
 		}
 		else {
@@ -107,7 +109,8 @@ void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
 		if (MARINES12_STATE.attacking) {
 			const GameInfo& game_info = Observation()->GetGameInfo();
 			// there are 3 enemy_start_locations
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen.front());
+			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen.front());
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, FindEnemyBase());
 		}
 		break;
 	}
@@ -135,17 +138,33 @@ void OrionBot::tryCalldownExtraSupplies(const Unit* unit) {
 	}
 }
 
-/*void SCOUT_BOT::unitEnterVision(const sc2::Unit * u) {
-	// if unit is enemy, record spotting
-	if (u->alliance == Unit::Alliance::Enemy) {
-		auto now = std::chrono::steady_clock::now();
-		detection_record.emplace_back(*u, Point2D(u->pos), now);
-	}
-}*/
-
 void OrionBot::OnUnitEnterVision(const Unit* unit) {
 	if (unit->alliance == Unit::Alliance::Enemy) {
 		//std::cout << "See enemy" << std::endl;
 		locations_enemy_seen.push_back(Point2D(unit->pos));
+		
+		// find to what base this location is closest to
+		closestToBase(Point2D(unit->pos));
 	}
+}
+
+void OrionBot::closestToBase(Point2D coord) {
+	float min_distance = FLT_MAX;
+	int min_i = 0;
+
+	for (int i = 0; i < possible_enemy_bases.size(); ++i) {
+		auto distance = DistanceSquared2D(coord, possible_enemy_bases[i]);
+		if (distance < min_distance) {
+			min_distance = distance;
+			min_i = i;
+		}
+	}
+	enemyBaseValue[min_i] += 1;
+	return;
+}
+
+Point2D OrionBot::FindEnemyBase() {
+	auto position = std::distance(enemyBaseValue.begin(), std::max_element(enemyBaseValue.begin(), enemyBaseValue.end()));
+	Point2D point = possible_enemy_bases[position];
+	return point;
 }

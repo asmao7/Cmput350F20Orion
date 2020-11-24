@@ -9,6 +9,7 @@
 #include "sc2api/sc2_unit_filters.h"
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include <cstddef>
 
@@ -87,6 +88,10 @@ private:
 	enum Marines12_Strategy { STAGE1_MARINES = 0, STAGE2_MARINES, STAGE3_MARINES, STAGE4_ATTACK_MARINES };
 
 	std::vector<Point2D> locations_enemy_seen;
+
+	std::vector<Point2D> possible_enemy_bases;
+	std::vector<int> enemyBaseValue;
+	//std::map<Point2D, int> possible_enemy_bases;
 	#include "BuildManager.h"
 	#include "Banshee.h"
 	#include "Rax6.h"
