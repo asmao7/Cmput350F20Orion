@@ -43,8 +43,9 @@ private:
 		bool upgradeOrbital;
 		bool newCommandCentre;
 		int currentBuild;
-		bool SD1 = false;
-		bool Rax = false;
+	
+		int raxs = 0;
+		Point2D barracks;
 
 		Point2D tobuildSD;
 		Point2D tobuildRaxs;
