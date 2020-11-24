@@ -23,8 +23,11 @@
 void OrionBot::Rax6Build() {
 	switch (RAX6_STATE.currentBuild) {
 	case STAGE1_RAX6:
+		OrionBot::setChokePoints();
 		if (Observation()->GetMinerals() >= 100) {
-			OrionBot::TryBuildSupplyDepot();
+			//OrionBot::TryBuildSupplyDepot();
+			RAX6_STATE.SD1 = true;
+			OrionBot::TryBuildStructureAtCP(ABILITY_ID::BUILD_SUPPLYDEPOT, UNIT_TYPEID::TERRAN_SCV, RAX6_STATE.tobuildSD);
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
 			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 1) {
@@ -39,7 +42,8 @@ void OrionBot::Rax6Build() {
 			}
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 1) {
-			OrionBot::TryBuildBarracks();
+			//OrionBot::TryBuildBarracks();
+			OrionBot::TryBuildStructureAtCP(ABILITY_ID::BUILD_BARRACKS, UNIT_TYPEID::TERRAN_SCV, RAX6_STATE.tobuildRaxs);
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 0) {
 			RAX6_STATE.upgradeOrbital = true;
@@ -53,6 +57,7 @@ void OrionBot::Rax6Build() {
 		break;
 		
 	case STAGE2_RAX6:
+		//TryBuildExpansionCom();
 		TryBuildCommandCentreChokeP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
 		if ((RAX6_STATE.newCommandCentre == true)) {
 			RAX6_STATE.currentBuild++;
@@ -87,7 +92,7 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 				break;
 			}
 			//Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_CALLDOWNMULE);
-			Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_SCAN, Point2D(158.5, 33.5));
+			Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_SCAN, Point2D(150, 33.5));
 			std::cout << "SCANNEDDDDD" << std::endl;
 		}
 		break;
@@ -192,6 +197,26 @@ bool OrionBot::TryBuildCommandCentreChokeP(ABILITY_ID ability_type_for_structure
 	float rx = toBuildCC.x;
 	float ry = toBuildCC.y;
 
+	/*
+	if (observation->GetStartLocation().x == RAX6_STATE.BOTTOM_LEFT.x && observation->GetStartLocation().y == RAX6_STATE.BOTTOM_LEFT.y) {
+		rx = 30;
+		ry = 66.1;
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.BOTTOM_RIGHT.x && observation->GetStartLocation().y == RAX6_STATE.BOTTOM_RIGHT.y) {
+		rx = 126;
+		ry = 30.5;
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.TOP_LEFT.x && observation->GetStartLocation().y == RAX6_STATE.TOP_LEFT.y) {
+		rx = 30;		  //125;
+		ry = 125.9;   // 130;
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.TOP_RIGHT.x && observation->GetStartLocation().y == RAX6_STATE.TOP_RIGHT.y) {
+		rx = 160.9;  // 156.5;
+		ry = 125.9;  // 130.5;
+	}
+	*/
+
+	std::cout << "TO BUILD.X = " << toBuildCC.x << " ," << toBuildCC.y << std::endl;
 	Actions()->UnitCommand(unit_to_build,
 		ability_type_for_structure,
 		Point2D(rx, ry));
@@ -325,4 +350,128 @@ int OrionBot::GetExpectedWorkers(UNIT_TYPEID vespene_building_type) {
 	}
 
 	return expected_workers;
+}
+
+
+
+
+// From Sc2 Cpp Tutorial
+bool OrionBot::TryBuildBarracks2(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
+	const ObservationInterface* observation = Observation();
+
+	// If a unit already is building a supply structure of this type, do nothing.
+	// Also get an scv to build the structure.
+	const Unit* unit_to_build = nullptr;
+	Units units = observation->GetUnits(Unit::Alliance::Self);
+	Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+	for (const auto& unit : units) {
+		for (const auto& order : unit->orders) {
+			if (order.ability_id == ability_type_for_structure) {
+				return false;
+			}
+		}
+
+		if (unit->unit_type == unit_type) {
+			unit_to_build = unit;
+		}
+	}
+
+	float rx; // = GetRandomScalar();
+	float ry; // = GetRandomScalar();
+
+	if (observation->GetStartLocation().x == RAX6_STATE.BOTTOM_LEFT.x && observation->GetStartLocation().y == RAX6_STATE.BOTTOM_LEFT.y) {
+		rx = 51;
+		ry = 33.5;
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.BOTTOM_RIGHT.x && observation->GetStartLocation().y == RAX6_STATE.BOTTOM_RIGHT.y) {
+		rx = 140;
+		ry = 33.5;
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.TOP_LEFT.x && observation->GetStartLocation().y == RAX6_STATE.TOP_LEFT.y) {
+		rx = 51;		  //125;
+		ry = 125.9;   // 130;
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.TOP_RIGHT.x && observation->GetStartLocation().y == RAX6_STATE.TOP_RIGHT.y) {
+		rx = 140;  // 156.5;
+		ry = 125.9;  // 130.5;
+	}
+
+
+	if (!bases.empty()) {
+		Actions()->UnitCommand(unit_to_build,
+			ability_type_for_structure,
+			Point2D(rx, ry));
+	}
+	else {
+		Actions()->UnitCommand(unit_to_build,
+			ability_type_for_structure,
+			Point2D(rx, ry));
+	}
+	return true;
+}
+
+
+bool OrionBot::TryBuildStructureAtCP(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type, Point2D toBuildPos) {
+	const ObservationInterface* observation = Observation();
+
+	// If a unit already is building a supply structure of this type, do nothing.
+	// Also get an scv to build the structure.
+	const Unit* unit_to_build = nullptr;
+	Units units = observation->GetUnits(Unit::Alliance::Self);
+	Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+	for (const auto& unit : units) {
+		for (const auto& order : unit->orders) {
+			if (order.ability_id == ability_type_for_structure) {
+				return false;
+			}
+		}
+
+		if (unit->unit_type == unit_type) {
+			unit_to_build = unit;
+		}
+	}
+	/*
+	Point2D toBuildPos;
+	if (RAX6_STATE.SD1) {
+		toBuildPos = RAX6_STATE.tobuildSD;
+	}
+	else if(RAX6_STATE.Rax){
+		toBuildPos = RAX6_STATE.tobuildRaxs;
+	}
+	*/
+	if (!bases.empty()) {
+		Actions()->UnitCommand(unit_to_build,
+			ability_type_for_structure,
+			Point2D(toBuildPos.x, toBuildPos.y));
+	}
+	else {
+		float rx = GetRandomScalar();
+		float ry = GetRandomScalar();
+		Actions()->UnitCommand(unit_to_build,
+			ability_type_for_structure,
+			Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
+	}
+	return true;
+}
+
+
+void OrionBot::setChokePoints() {
+	const ObservationInterface* observation = Observation();
+
+	if (observation->GetStartLocation().x == RAX6_STATE.BOTTOM_LEFT.x && observation->GetStartLocation().y == RAX6_STATE.BOTTOM_LEFT.y) {
+		RAX6_STATE.tobuildSD = Point2D(29, 54);
+		RAX6_STATE.tobuildRaxs = Point2D(29, 51);
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.BOTTOM_RIGHT.x && observation->GetStartLocation().y == RAX6_STATE.BOTTOM_RIGHT.y) {
+		RAX6_STATE.tobuildSD = Point2D(138, 29);
+		RAX6_STATE.tobuildRaxs = Point2D(140, 29);
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.TOP_LEFT.x && observation->GetStartLocation().y == RAX6_STATE.TOP_LEFT.y) {
+		RAX6_STATE.tobuildSD = Point2D(51, 160);
+		RAX6_STATE.tobuildRaxs = Point2D(51, 162);
+	}
+	else if (observation->GetStartLocation().x == RAX6_STATE.TOP_RIGHT.x && observation->GetStartLocation().y == RAX6_STATE.TOP_RIGHT.y) {
+		RAX6_STATE.tobuildSD = Point2D(160, 141);
+		RAX6_STATE.tobuildRaxs = Point2D(162,140);
+	}
 }

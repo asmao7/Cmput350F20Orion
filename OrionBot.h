@@ -43,9 +43,22 @@ private:
 		bool upgradeOrbital;
 		bool newCommandCentre;
 		int currentBuild;
+		bool SD1 = false;
+		bool Rax = false;
+
+		Point2D tobuildSD;
+		Point2D tobuildRaxs;
+
+		Point2D BOTTOM_LEFT = Point2D(33.5, 33.5);	
+		Point2D BOTTOM_RIGHT = Point2D(158.5, 33.5);
+		Point2D TOP_LEFT = Point2D(33.5, 158.5);
+		Point2D TOP_RIGHT = Point2D(158.5, 158.5);
 	};
 	Rax6 RAX6_STATE;
 	enum Rax6_Strategy { STAGE1_RAX6 = 0, STAGE2_RAX6, STAGE3_RAX6, STAGE4_RAX6 };
+	// possible starting location and a possible enemy locations
+	//enum locations{Point2D BOTTOM_LEFT = Point2D(33.5, 33.5), Point2D BOTTOMM_RIGHT = Point2D(158.5, 33.5), 
+		//		   Point2D TOP_LEFT = Point2D(33.5, 158.5),   Point2D TOP_RIGHT = Point2D(158.5, 158.5)};
 
 
 	//12 Marines Rush Strategy Variables
