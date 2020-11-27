@@ -38,7 +38,7 @@ bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, 
 //Takes in a point.
 //Made by: Joe
 const bool OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
-    Units geysers = Observation()->GetUnits(Unit::Alliance::Neutral,IsGeyser());
+    Units geysers = Observation()->GetUnits(Unit::Alliance::Neutral, IsGeyser());
     float distance = std::numeric_limits<float>::max();
     const Unit* target = nullptr;
     float minimum_distance = 15.0f;
@@ -54,7 +54,7 @@ const bool OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
     if (closestGeyser == 0) {
         return false;
     }
-    return TryBuildStructureTargeted(ABILITY_ID::BUILD_REFINERY,closestGeyser);
+    return TryBuildStructureTargeted(ABILITY_ID::BUILD_REFINERY, closestGeyser);
 }
 
 //Try to build factory
@@ -68,25 +68,7 @@ bool OrionBot::TryBuildFactory() {
 bool OrionBot::TryBuildStarport() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_STARPORT);
 }
-/*
-//Made by: Ana
-bool OrionBot::TryBuildOrbitalCommand() {
-    const ObservationInterface* observation = Observation();
 
-    if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) >= 1) {
-        return false;
-    }
-    
-    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
-    for (const auto& base : bases) {
-        if (base->unit_type == UNIT_TYPEID::TERRAN_ORBITALCOMMAND && base->energy > 150) {
-            // upgrade Orbital command
-
-        }
-    }
-    //return OrionBot::TryBuildStructure(ABILITY_ID::LAND_ORBITALCOMMAND);
-}
-*/
 
 // Made by Ana
 void OrionBot::TryBuildOrbitalCommand() {
@@ -146,11 +128,11 @@ bool OrionBot::TryBuildMarine() {
         }
     }
     return false;
-   
+
 }
 
-/* 
- * TODO! 
+/*
+ * TODO!
  * ~Asma
 */
 bool OrionBot::TryBuildCommandCentre() {
@@ -163,7 +145,7 @@ bool OrionBot::TryBuildCommandCentre() {
 
 
 /*
- * ~ in progress! 
+ * ~ in progress!
  * Attacking only if enemy
  * is in close proximity,
  * ~Asma
@@ -192,7 +174,7 @@ void OrionBot::TryAttacking() {
 }
 
 /*
- * in progress! 
+ * in progress!
  * if SVCs > 10  then scout
  * ~Asma
 */
@@ -206,8 +188,8 @@ void OrionBot::TryScouting() {
     }
 }
 
-/* 
- * Utility function for scouting 
+/*
+ * Utility function for scouting
  * Find any enemy structures
  * ~Asma
 */
@@ -237,8 +219,49 @@ bool OrionBot::FindEnemyPosition(Point2D& target_pos) {
     return true;
 }
 
-/*
- * NOTE: I USED THE API A LOT
- * WILL CITE PROPERLY LATER
- * ~Asma
-*/
+//ADDED
+bool OrionBot::BuildRefinery() {
+    const ObservationInterface* observation = Observation();
+    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+
+    if (CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) >= observation->GetUnits(Unit::Alliance::Self, IsTownHall()).size() * 2) {
+        return false;
+    }
+
+    for (const auto& base : bases) {
+        if (base->assigned_harvesters >= base->ideal_harvesters) {
+            if (base->build_progress == 1) {
+                if (TryBuildGas(ABILITY_ID::BUILD_REFINERY, UNIT_TYPEID::TERRAN_SCV, base->pos)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool OrionBot::TryBuildGas(AbilityID build_ability, UnitTypeID worker_type, Point2D base_location) {
+    const ObservationInterface* observation = Observation();
+    Units geysers = observation->GetUnits(Unit::Alliance::Neutral, IsGeyser());
+
+    //only search within this radius
+    float minimum_distance = 15.0f;
+    Tag closestGeyser = 0;
+    for (const auto& geyser : geysers) {
+        float current_distance = Distance2D(base_location, geyser->pos);
+        if (current_distance < minimum_distance) {
+            if (Query()->Placement(build_ability, geyser->pos)) {
+                minimum_distance = current_distance;
+                closestGeyser = geyser->tag;
+            }
+        }
+    }
+
+    // In the case where there are no more available geysers nearby
+    if (closestGeyser == 0) {
+        return false;
+    }
+    return TryBuildStructureTargeted(build_ability,closestGeyser, worker_type);
+
+}
+

@@ -63,10 +63,11 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
 
     float rx = GetRandomScalar();
     float ry = GetRandomScalar();
+
     if (!bases.empty()) {
         Actions()->UnitCommand(unit_to_build,
             ability_type_for_structure,
-            Point2D(bases.front()->pos.x + rx * 15.0f, bases.front()->pos.y + ry * 15.0f));
+            Point2D((bases.front()->pos.x + 3.0f) + rx * 16.0f, (bases.front()->pos.y + 3.0f) + ry * 16.0f));
     }
     else {
         Actions()->UnitCommand(unit_to_build,
