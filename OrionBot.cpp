@@ -51,7 +51,9 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
     // Also get an scv to build the structure.
     const Unit* unit_to_build = nullptr;
     Units units = observation->GetUnits(Unit::Alliance::Self);
-    Units bases = observation->GetUnits(Unit::Alliance::Self,IsTownHall());
+    //Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+
     for (const auto& unit : units) {
         for (const auto& order : unit->orders) {
             if (order.ability_id == ability_type_for_structure) {

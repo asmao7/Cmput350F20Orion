@@ -9,6 +9,7 @@
 #include "sc2api/sc2_unit_filters.h"
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include <cstddef>
 
@@ -31,8 +32,8 @@ private:
 	//Lets us know what strategy we are playing
 	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX };
 	//int RUSH_STRATEGY = RUSH_BANSHEE;
-	int RUSH_STRATEGY = RUSH_6RAX;
-	//int RUSH_STRATEGY = RUSH_12MARINES;
+	//int RUSH_STRATEGY = RUSH_6RAX;
+	int RUSH_STRATEGY = RUSH_12MARINES;
 
 	//6Rax Rush Strategy Variables
 	//Made by: Asma
@@ -90,13 +91,16 @@ private:
 	/*
 	struct Marines12 {
 		Marines12() : orbital_upgrade(false), produce_scv(true), current_build(0),
-					produce_marine(false), orbital_command_upgraded(false)
+					orbital_command_upgraded(false), supplies_called(false),
+					attacking(false), num_units_scouting(0)
 		{}
 		int current_build;
 		bool orbital_upgrade;
 		bool produce_scv;
-		bool produce_marine;
 		bool orbital_command_upgraded;
+		bool supplies_called;
+		bool attacking;
+		int num_units_scouting;
 	};
 
 	Marines12 MARINES12_STATE;
@@ -125,6 +129,7 @@ private:
 	std::vector<Point2D> possible_enemy_bases;
 	std::vector<int> enemyBaseValue;
 
+	//std::map<Point2D, int> possible_enemy_bases;
 	#include "BuildManager.h"
 	#include "Banshee.h"
 	#include "Rax6.h"

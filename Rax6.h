@@ -291,6 +291,7 @@ void OrionBot::setChokePoints() {
 
 
 // a
+/*
 void OrionBot::OnUnitEnterVision(const Unit* unit) {
 	if (unit->alliance == Unit::Alliance::Enemy) {
 		locations_enemy_seen.push_back(Point2D(unit->pos));
@@ -319,5 +320,5 @@ Point2D OrionBot::FindEnemyBase() {
 	auto position = std::distance(enemyBaseValue.begin(), std::max_element(enemyBaseValue.begin(), enemyBaseValue.end()));
 	Point2D point = possible_enemy_bases[position];
 	return point;
-}
+}*/
 

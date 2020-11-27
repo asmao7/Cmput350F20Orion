@@ -29,3 +29,13 @@
 void OrionBot::Marines12Build();
 
 void OrionBot::Marines12OnUnitIdle(const Unit* unit);
+
+void OrionBot::tryCalldownMULE(const Unit* unit);
+
+void OrionBot::tryCalldownExtraSupplies(const Unit* unit);
+
+void OrionBot::OnUnitEnterVision(const Unit* unit);
+
+void OrionBot::closestToBase(Point2D coord);
+
+Point2D OrionBot::FindEnemyBase();
