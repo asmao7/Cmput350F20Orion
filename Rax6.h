@@ -50,7 +50,7 @@ void OrionBot::Rax6Build() {
 		}
 
 		if (CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) > 0) {
-			RAX6_STATE.upgradeOrbital = true;
+			//RAX6_STATE.upgradeOrbital = true;
 			//RAX6_STATE.newCommandCentre = true;
 			RAX6_STATE.currentBuild++;
 		}
@@ -148,6 +148,9 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 			// there are 3 enemy_start_locations
 			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen.front());
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, FindEnemyBase());
+		}
+		else {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, RAX6_STATE.tobuildRaxs);
 		}
 		break;
 	}
