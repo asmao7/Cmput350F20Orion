@@ -108,6 +108,31 @@ bool OrionBot::AddWorkersToRefineries(const Unit* unit) {
     }
     return false;
 }
+bool OrionBot::FillRefineries() {
+    const ObservationInterface* observation = Observation();
+    Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
+    Units geysers = observation->GetUnits(Unit::Alliance::Self, IsVisibleGeyser());
+    if (workers.empty()) {
+        return false;
+    }
+    if (geysers.empty()) {
+        return false;
+    }
+    // If no worker is already building one, get a random worker to build one
+    const Unit* unit = GetRandomEntry(workers);
+    for (const auto& order : unit->orders) {
+        if (order.ability_id == ABILITY_ID::HARVEST_GATHER) {
+            return false;
+        }
+    }
+    for (const auto& geyser : geysers) {
+        if (geyser->assigned_harvesters < geyser->ideal_harvesters - 1) {
+            Actions()->UnitCommand(unit, ABILITY_ID::HARVEST_GATHER, geyser);
+            return true;
+        }
+    }
+    return false;
+}
 
 /*
  * Fix!

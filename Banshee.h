@@ -26,235 +26,225 @@
 
 void OrionBot::BansheeBuild() {
 	switch (BANSHEE_STATE.current_build) {
-		case STAGE1_BANSHEE:
-			// 10 - Supply Depot
-			if (Observation()->GetMinerals() >= 100) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 1) {
-					OrionBot::TryBuildSupplyDepot();
-				}
+	case STAGE1_BANSHEE: {
+		// 10 - Supply Depot
+		if (Observation()->GetMinerals() >= 100) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 1) {
+				OrionBot::TryBuildSupplyDepot();
 			}
-			// 12 - Refinery
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 1) {
-					if (Observation()->GetMinerals() >= 75) {
-						const ObservationInterface* observation = Observation();
-						Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
-						if (!workers.empty()) {
-							bool vespene_target = false;
-							FindNearestVespeneGeyser(workers.front()->pos);
-						}
+		}
+		// 12 - Refinery
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 1) {
+				if (Observation()->GetMinerals() >= 75) {
+					const ObservationInterface* observation = Observation();
+					Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
+					if (!workers.empty()) {
+						bool vespene_target = false;
+						FindNearestVespeneGeyser(workers.front()->pos);
 					}
-					/*OrionBot::BuildRefinery();*/
 				}
+				/*OrionBot::BuildRefinery();*/
 			}
-			// 13 - Barracks
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 1) {
-				OrionBot::TryBuildBarracks();
+		}
+		// 13 - Barracks
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 1) {
+			OrionBot::TryBuildBarracks();
+		}
+		// 16 - Orbital Command
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 0) {
+			BANSHEE_STATE.orbital_upgrade = true;
+		}
+		// 16 Factory
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) > 0) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
+				OrionBot::TryBuildFactory();
 			}
-			// 16 - Orbital Command
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) > 0) {
-				BANSHEE_STATE.orbital_upgrade = true;
-			}
-			// 16 Factory
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) > 0) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
-					OrionBot::TryBuildFactory();
-				}
-			}
-			// Increment the build counter.
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) > 0) {
-				/*OrionBot::TryBuildSupplyDepot();*/
-				BANSHEE_STATE.current_build++;
-			}
-			break;
-		case STAGE2_BANSHEE:
-			/*16 - Marine(1) + Supply Depot
+		}
+		// Increment the build counter.
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) > 0) {
+			/*OrionBot::TryBuildSupplyDepot();*/
+			BANSHEE_STATE.current_build++;
+		}
+		break;
+	}
+	case STAGE2_BANSHEE: {
+		/*16 - Marine(1) + Supply Depot
 			20 - Starport + Hellion(1 only)
 			@100 % Hellion(1) - Tech Lab(1) > Banshees(to 2)
 			23 - Refinery(2) + Supply Depot*/
-			BANSHEE_STATE.orbital_upgrade = false;
-			//16 - Supply Depot
-			if (Observation()->GetMinerals() >= 100) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 2) {
-					OrionBot::TryBuildSupplyDepot();
-				}
-			}
-			//16 - Marine(1) 
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MARINE) < 1) {
-				TryBuildMarine();
-			}
-			//OrionBot::TryBuildSupplyDepot();
-			//if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) < 1) {
-			//	/*OrionBot::TryBuildCommandCentre();*/
-			//	OrionBot::TryBuildSupplyDepot();
-			//}
-			//20 - Starport 
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1) {
-				OrionBot::TryBuildStarport();
-			}
-			//20 Hellion(1 only)
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_HELLION) < 1) {
-				BANSHEE_STATE.produce_hellion = true;
-			}
-			//20 Tech Lab(1) 
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_HELLION) > 0) {
-				BANSHEE_STATE.morph_techlab = true;
-				BANSHEE_STATE.produce_hellion = false;
-			}
-			//20 Banshees(to 2)
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
-				BANSHEE_STATE.morph_techlab = false;
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 2) {
-					BANSHEE_STATE.produce_banshee = true;
-				}
-			}
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) > 2) {
-				BANSHEE_STATE.produce_banshee = false;
-			}
-			//23 Supply Depot
-			if (Observation()->GetMinerals() >= 100) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 3) {
-					OrionBot::TryBuildSupplyDepot();
-				}
-			}
-			//23 - Refinery(2) 
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 3) {
-					if (Observation()->GetMinerals() >= 75) {
-						const ObservationInterface* observation = Observation();
-						Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
-						bool vespene_target = false;
-						if (!workers.empty()) {
-							FindNearestVespeneGeyser(workers.front()->pos);
-							/*while (!vespene_target) {
-								vespene_target = FindNearestVespeneGeyser(workers.front()->pos);
-							}*/
-						}
-					}
-					/*OrionBot::BuildRefinery();*/
-				}
-			}
-			
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) >= 2) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
-					if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_HELLION) >= 1) {
-						if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) > 1) {
-							BANSHEE_STATE.produce_banshee = false;
-							BANSHEE_STATE.produce_hellion = false;
-							//BANSHEE_STATE.morph_techlab = false;
-							//OrionBot::TryBuildSupplyDepot();
-							BANSHEE_STATE.current_build++;
-						}
-					}
-				}
-			}
-			break;
-		case STAGE3_BANSHEE:
-			//30 - Barracks > Reactor + Supply Depot
-			//32 - Factory > Tech Lab(2)
-			//Supply Depot
-			std::cout << STAGE3_BANSHEE << std::endl;
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 4) {
+		BANSHEE_STATE.orbital_upgrade = false;
+		//16 - Supply Depot
+		if (Observation()->GetFoodUsed() > Observation()->GetFoodCap() - 2) {
+			OrionBot::TryBuildSupplyDepot();
+		}
+		if (Observation()->GetMinerals() >= 100) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 2) {
 				OrionBot::TryBuildSupplyDepot();
 			}
-			
-			/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) < 1) {
-				OrionBot::TryBuildCommandCentre();
-			}*/
-			/*if (Observation()->GetMinerals() >= 100) {
-				OrionBot::TryBuildSupplyDepot();
-			}*/
-			BANSHEE_STATE.morph_reactor = true;
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
-				OrionBot::TryBuildFactory();
-			}
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) >= 0) {
-				BANSHEE_STATE.morph_techlab = true;
-			}
-			/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) < 1) {
-				OrionBot::TryBuildCommandCentre();
-			}*/
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 2) {
-				//OrionBot::TryBuildSupplyDepot();
-				BANSHEE_STATE.morph_reactor = false;
-				BANSHEE_STATE.morph_techlab = false;
-				/*const ObservationInterface* observation = Observation();
-				Units supply_depots = observation->GetUnits(Unit::Self, IsUnit(UNIT_TYPEID::TERRAN_SUPPLYDEPOT));
-				for (const auto& supply_depot : supply_depots) {
-					Actions()->UnitCommand(supply_depot, ABILITY_ID::MORPH_SUPPLYDEPOT_LOWER);
-				}*/
-				//Units workers = Observation()->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_FACTORY));
-				BANSHEE_STATE.current_build++;
-			}
-			else {
-				OrionBot::TryBuildFactory();
-			}
-			break;
-		case STAGE4_BANSHEE:
-			//39 - Siege Tanks + Supply Depot
-			//52 - Siege Tech > @100 % -Attack
-			//39 Supply Depot
-			std::cout << STAGE4_BANSHEE << std::endl;
-			if (Observation()->GetMinerals() >= 100) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 5) {
-					OrionBot::TryBuildSupplyDepot();
-				}
-			}
-			//39 Siege Tanks
-			//OrionBot::TryBuildExpansionCom();
-			//OrionBot::TryBuildCommandCentre();
-			/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) < 1) {
-				OrionBot::TryBuildCommandCentre();
-			}*/
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 3) {
-					//if (Observation()->GetMinerals() >= 75) {
-					//	const ObservationInterface* observation = Observation();
-					//	Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
-					//	bool vespene_target = false;
-					//	if (!workers.empty()) {
-					//		FindNearestVespeneGeyser(workers.front()->pos);
-					//		/*while (!vespene_target) {
-					//			vespene_target = FindNearestVespeneGeyser(workers.front()->pos);
-					//		}*/
-					//	}
-					//}
-					OrionBot::BuildRefinery();
-				}
-			}
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 5) {
-				BANSHEE_STATE.current_build++;
-			}
-			break;
-		case STAGE5_BANSHEE:
-			std::cout << STAGE5_BANSHEE << std::endl;
+		}
+		//16 - Marine(1) 
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MARINE) < 1) {
+			TryBuildMarine();
+		}
+		//20 - Starport 
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1) {
+			OrionBot::TryBuildStarport();
+		}
+		//20 Hellion(1 only)
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_HELLION) < 1) {
+			BANSHEE_STATE.produce_hellion = true;
+		}
+		//20 Tech Lab(1) 
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_HELLION) > 0) {
 			BANSHEE_STATE.morph_techlab = true;
-			OrionBot::TryBuildCommandCentre();
-			if (Observation()->GetMinerals() >= 100) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 6) {
-					OrionBot::TryBuildSupplyDepot();
-				}
-			}
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 4) {
-					OrionBot::BuildRefinery();
-				}
-			}
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) > 0) {
-				OrionBot::TryBuildBarracks();
-			}
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 2) {
-				OrionBot::TryBuildStarport();
-			}
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 1) {
-				BANSHEE_STATE.morph_techlab = false;
+			BANSHEE_STATE.produce_hellion = false;
+		}
+		//20 Banshees(to 2)
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
+			BANSHEE_STATE.morph_techlab = false;
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 2) {
 				BANSHEE_STATE.produce_banshee = true;
 			}
-			break;
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) > 2) {
+			BANSHEE_STATE.produce_banshee = false;
+		}
+		//23 Supply Depot
+		if (Observation()->GetMinerals() >= 100) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 3) {
+				OrionBot::TryBuildSupplyDepot();
+			}
+		}
+		//23 - Refinery(2) 
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 3) {
+				if (Observation()->GetMinerals() >= 75) {
+					const ObservationInterface* observation = Observation();
+					Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
+					bool vespene_target = false;
+					if (!workers.empty()) {
+						FindNearestVespeneGeyser(workers.front()->pos);
+					}
+				}
+			}
+		}
+		if (Observation()->GetMinerals() >= 100) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 3) {
+				OrionBot::TryBuildSupplyDepot();
+			}
+		}
+		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
+			OrionBot::TryBuildFactory();
+		}*/
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) >= 2) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
+				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_HELLION) > 0) {
+					if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) > 1) {
+						BANSHEE_STATE.produce_banshee = false;
+						BANSHEE_STATE.produce_hellion = false;
+						//BANSHEE_STATE.morph_techlab = false;
+						//OrionBot::TryBuildSupplyDepot();
+						//OrionBot::TryBuildFactory();
+						BANSHEE_STATE.current_build++;
+					}
+				}
+			}
+			/*else {
+				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 2) {
+					OrionBot::TryBuildStarport();
+				}
+			}*/
+		}
+		break;
+	}
+	case STAGE3_BANSHEE: {
+		//30 - Barracks > Reactor + Supply Depot
+			//32 - Factory > Tech Lab(2)
+			//Supply Depot
+		std::cout << STAGE3_BANSHEE << std::endl;
+		if (Observation()->GetFoodUsed() > Observation()->GetFoodCap() - 2) {
+			OrionBot::TryBuildSupplyDepot();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 4) {
+			OrionBot::TryBuildSupplyDepot();
+		}
+
+
+		BANSHEE_STATE.morph_reactor = true;
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
+			OrionBot::TryBuildFactory();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) >= 0) {
+			BANSHEE_STATE.morph_techlab = true;
+		}
+
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 2) {
+			//OrionBot::TryBuildSupplyDepot();
+			BANSHEE_STATE.morph_reactor = false;
+			BANSHEE_STATE.morph_techlab = false;
+			BANSHEE_STATE.current_build++;
+		}
+		else {
+			OrionBot::TryBuildFactory();
+		}
+		break;
+	}
+	case STAGE4_BANSHEE: {
+		//39 - Siege Tanks + Supply Depot
+			//52 - Siege Tech > @100 % -Attack
+			//39 Supply Depot
+		std::cout << STAGE4_BANSHEE << std::endl;
+		if (Observation()->GetMinerals() >= 100) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 6) {
+				OrionBot::TryBuildSupplyDepot();
+				OrionBot::TryBuildSupplyDepot();
+			}
+		}
+		//39 Siege Tanks
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 3) {
+				OrionBot::BuildRefinery();
+			}
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 5) {
+			BANSHEE_STATE.current_build++;
+		}
+		break;
+	}
+	case STAGE5_BANSHEE: {
+		std::cout << STAGE5_BANSHEE << std::endl;
+		//BANSHEE_STATE.morph_techlab = true;
+		OrionBot::TryBuildCommandCentre();
+		if (Observation()->GetFoodUsed() > Observation()->GetFoodCap() - 2) {
+			OrionBot::TryBuildSupplyDepot();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
+			//if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 4) {
+			OrionBot::BuildRefinery();
+			//}
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) > 0) {
+			OrionBot::TryBuildBarracks();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 2) {
+			OrionBot::TryBuildStarport();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
+			//BANSHEE_STATE.morph_techlab = false;
+			BANSHEE_STATE.produce_banshee = true;
+		}
+		break;
+	}
+	default: {
+		break;
+	}
+			
 	}
 }
 
 void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
+	Units enemy_units = Observation()->GetUnits(Unit::Alliance::Enemy);
 	switch (unit->unit_type.ToType()) {
 	case UNIT_TYPEID::TERRAN_COMMANDCENTER: {
 		if (BANSHEE_STATE.orbital_upgrade) {
@@ -266,7 +256,7 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_ORBITALCOMMAND: {
-		if (unit->energy > 50) {
+		if (unit->energy > 75) {
 			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
 			if (!mineral_target) {
 				break;
@@ -336,17 +326,6 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_FACTORY: {
-		/*if (BANSHEE_STATE.current_build > STAGE3_BANSHEE) {
-			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SIEGETANK);
-		}
-		else {
-			if (BANSHEE_STATE.produce_hellion) {
-				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_HELLION);
-			}
-			if (BANSHEE_STATE.morph_techlab) {
-				Actions()->UnitCommand(unit, ABILITY_ID::BUILD_TECHLAB_FACTORY);
-			}
-		}*/
 
 		if (BANSHEE_STATE.produce_hellion) {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_HELLION);
@@ -354,13 +333,13 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 			Actions()->UnitCommand(unit, ABILITY_ID::BUILD_TECHLAB_FACTORY);
 		}
 		else {
-			//if (Observation()->GetVespene() > 125) {
-			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SIEGETANK);
-			//}
+			if (BANSHEE_STATE.current_build >= STAGE4_BANSHEE) {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SIEGETANK);
+			}
+			else {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_HELLBAT);
+			}
 		}
-		/*if (BANSHEE_STATE.current_build >= STAGE4_BANSHEE) {
-			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SIEGETANK);
-		}*/
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_FACTORYTECHLAB: {
@@ -376,35 +355,31 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 		}
 		break;
 	}
-	/*case UNIT_TYPEID::TERRAN_FACTORYTECHLAB: {
-		if (BANSHEE_STATE.current_build >= STAGE4_BANSHEE) {
-			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SIEGETANK);
-		}
-		break;
-	}*/
 	case UNIT_TYPEID::TERRAN_MARINE: {
 		//const GameInfo& game_info = Observation()->GetGameInfo();
 		//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
 		if (BANSHEE_STATE.current_build >= STAGE5_BANSHEE) {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_HELLION: {
 		if (BANSHEE_STATE.current_build >= STAGE5_BANSHEE) {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());
+			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, enemy_units.front()->pos);
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_BANSHEE: {
 		if (BANSHEE_STATE.current_build >= STAGE5_BANSHEE) {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());
+			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, enemy_units.front()->pos);
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_REAPER: {
 		const GameInfo& game_info = Observation()->GetGameInfo();
-		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
+		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, game_info.enemy_start_locations.front());
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_SIEGETANK: {
@@ -424,7 +399,7 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 				Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SIEGEMODE);
 			}
 			else {
-				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 			}
 		}
 		else {
@@ -447,7 +422,7 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 				Actions()->UnitCommand(unit, ABILITY_ID::MORPH_UNSIEGE);
 			}
 			else {
-				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 			}
 		}
 		else {
@@ -462,49 +437,3 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 	}
 }
 
-//bool OrionBot::TryBuildExpansionCom() {
-//	const ObservationInterface* observation = Observation();
-//	Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
-//	//Don't have more active bases than we can provide workers for
-//	if (GetExpectedWorkers(UNIT_TYPEID::TERRAN_REFINERY) > max_worker_count_) {
-//		return false;
-//	}
-//	// If we have extra workers around, try and build another Hatch.
-//	if (GetExpectedWorkers(UNIT_TYPEID::TERRAN_REFINERY) < observation->GetFoodWorkers() - 10) {
-//		return TryExpand(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
-//	}
-//	//Only build another Hatch if we are floating extra minerals
-//	if (observation->GetMinerals() > std::min<size_t>(bases.size() * 400, 1200)) {
-//		return TryExpand(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
-//	}
-//	return false;
-//}
-//
-////Expands to nearest location and updates the start location to be between the new location and old bases.
-//bool OrionBot::TryExpand(AbilityID build_ability, UnitTypeID worker_type) {
-//	const ObservationInterface* observation = Observation();
-//	float minimum_distance = std::numeric_limits<float>::max();
-//	Point3D closest_expansion;
-//	expansions_ = search::CalculateExpansionLocations(Observation(), Query());
-//	for (const auto& expansion : expansions_) {
-//		float current_distance = Distance2D(Observation()->GetStartLocation(), expansion);
-//		if (current_distance < .01f) {
-//			continue;
-//		}
-//
-//		if (current_distance < minimum_distance) {
-//			if (Query()->Placement(build_ability, expansion)) {
-//				closest_expansion = expansion;
-//				minimum_distance = current_distance;
-//			}
-//		}
-//	}
-//	//only update staging location up till 3 bases.
-//	if (TryBuildStructureLocation(build_ability, worker_type, closest_expansion, true) && observation->GetUnits(Unit::Self, IsTownHall()).size() < 4) {
-//		staging_location_ = Point3D(((staging_location_.x + closest_expansion.x) / 2), ((staging_location_.y + closest_expansion.y) / 2),
-//			((staging_location_.z + closest_expansion.z) / 2));
-//		return true;
-//	}
-//	return false;
-//
-//}
