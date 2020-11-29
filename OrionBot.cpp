@@ -105,13 +105,13 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
     }
 
     // Check to see if there is already a worker heading out to build it
-    for (const auto& worker : workers) {
+    /*for (const auto& worker : workers) {
         for (const auto& order : worker->orders) {
             if (order.ability_id == ability_type_for_structure) {
                 return false;
             }
         }
-    }
+    }*/
 
     // If no worker is already building one, get a random worker to build one
     const Unit* unit = GetRandomEntry(workers);
