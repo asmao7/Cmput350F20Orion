@@ -27,6 +27,14 @@ void OrionBot::Rax6Build() {
 	switch (RAX6_STATE.currentBuild) {
 	case STAGE1_RAX6:
 		OrionBot::setChokePoints();
+		
+		//while (!(RAX6_STATE.enemy_found)) {
+			OrionBot::TryScout();
+		//	if (FindEnemyBase() == RAX6_STATE.BOTTOM_LEFT || FindEnemyBase() == RAX6_STATE.BOTTOM_RIGHT || 
+			//	FindEnemyBase() == RAX6_STATE.TOP_RIGHT || FindEnemyBase()== RAX6_STATE.TOP_LEFT) {
+			//	RAX6_STATE.enemy_found = true;
+			//}
+		//}
 		if (Observation()->GetMinerals() >= 100) {
 			OrionBot::TryBuildStructureAtCP(ABILITY_ID::BUILD_SUPPLYDEPOT, UNIT_TYPEID::TERRAN_SCV, RAX6_STATE.tobuildSD);
 		}
@@ -57,7 +65,9 @@ void OrionBot::Rax6Build() {
 		break;
 
 	case STAGE2_RAX6:
+		TryBuildBarracks();
 		TryBuildCommandCentreExpansion(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
+		TryBuildBarracks();
 		RAX6_STATE.expand = true;
 		if ((RAX6_STATE.newCommandCentre == true)) {
 			RAX6_STATE.currentBuild++;
@@ -65,15 +75,24 @@ void OrionBot::Rax6Build() {
 		}
 
 	case STAGE3_RAX6:
-		TryBuildSupplyDepot();
 		TryBuildBarracks();
+		TryBuildSupplyDepot();
+		//TryBuildBarracks();
 		//TryBuildMarine();
+		if (CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) == 4) {
+			RAX6_STATE.currentBuild++;
+		}
 		break;
+
 
 	case STAGE4_RAX6:
 		TryBuildSupplyDepot();
 		TryBuildBarracks();
+		TryBuildBarracks();
 		//TryBuildMarine();
+		if (CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) == 6) {
+			RAX6_STATE.currentBuild++;
+		}
 		break;
 
 	}
@@ -107,7 +126,7 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 	}
 	case UNIT_TYPEID::TERRAN_SCV: {
 		const GameInfo& game_info = Observation()->GetGameInfo();
-
+		/*
 		if (RAX6_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
 			// send csv to one of the corners and save base location to possible_enemy_bases
 			Point2D location = game_info.enemy_start_locations[RAX6_STATE.num_units_scouting];
@@ -116,8 +135,8 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 			possible_enemy_bases.push_back(location);
 			enemyBaseValue.push_back(0);
 			RAX6_STATE.num_units_scouting++;
-		}
-		else if(RAX6_STATE.expand){
+		}*/
+		if(RAX6_STATE.expand){
 			Point2D enemyPos = FindEnemyBase();
 			for (int i = 0; i < 3; i++) {
 				if ((possible_enemy_bases[i]) != enemyPos) {
@@ -325,3 +344,25 @@ Point2D OrionBot::FindEnemyBase() {
 	return point;
 }*/
 
+
+void OrionBot::TryScout() {
+	const ObservationInterface* observation = Observation();
+	Units units = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
+	const GameInfo& game_info = Observation()->GetGameInfo();
+	if (RAX6_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
+		// send csv to one of the corners and save base location to possible_enemy_bases
+		Point2D location = game_info.enemy_start_locations[RAX6_STATE.num_units_scouting];
+		if (units.size() > 0) {
+			Actions()->UnitCommand(units[0], ABILITY_ID::MOVE_MOVE, location);
+		}
+
+		possible_enemy_bases.push_back(location);
+		enemyBaseValue.push_back(0);
+		RAX6_STATE.num_units_scouting++;
+
+		if (FindEnemyBase() == RAX6_STATE.BOTTOM_LEFT || FindEnemyBase() == RAX6_STATE.BOTTOM_RIGHT || 
+			FindEnemyBase() == RAX6_STATE.TOP_RIGHT || FindEnemyBase()== RAX6_STATE.TOP_LEFT) {
+			RAX6_STATE.enemy_found = true;
+		}
+	}
+}
