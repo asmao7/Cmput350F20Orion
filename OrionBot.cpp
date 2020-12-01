@@ -52,47 +52,47 @@ size_t OrionBot::CountUnitType(UNIT_TYPEID unit_type) {
 }
 
 // From Sc2 Cpp Tutorial
-bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
-    const ObservationInterface* observation = Observation();
-
-    // If a unit already is building a supply structure of this type, do nothing.
-    // Also get an scv to build the structure.
-    const Unit* unit_to_build = nullptr;
-    Units units = observation->GetUnits(Unit::Alliance::Self);
-    //Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
-    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
-
-    for (const auto& unit : units) {
-        for (const auto& order : unit->orders) {
-            if (order.ability_id == ability_type_for_structure) {
-                return false;
-            }
-        }
-
-        if (unit->unit_type == unit_type) {
-            unit_to_build = unit;
-        }
-    }
-
-    float rx = GetRandomScalar();
-    float ry = GetRandomScalar();
-    if (!bases.empty()) {
-        Actions()->UnitCommand(unit_to_build,
-            ability_type_for_structure,
-            Point2D(bases.front()->pos.x + rx * 15.0f, bases.front()->pos.y + ry * 15.0f));
-    }
-    else {
-        Actions()->UnitCommand(unit_to_build,
-            ability_type_for_structure,
-            Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
-    }
-    return true;
-}
+//bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
+//    const ObservationInterface* observation = Observation();
+//
+//    // If a unit already is building a supply structure of this type, do nothing.
+//    // Also get an scv to build the structure.
+//    const Unit* unit_to_build = nullptr;
+//    Units units = observation->GetUnits(Unit::Alliance::Self);
+//    //Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+//    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+//
+//    for (const auto& unit : units) {
+//        for (const auto& order : unit->orders) {
+//            if (order.ability_id == ability_type_for_structure) {
+//                return false;
+//            }
+//        }
+//
+//        if (unit->unit_type == unit_type) {
+//            unit_to_build = unit;
+//        }
+//    }
+//
+//    float rx = GetRandomScalar();
+//    float ry = GetRandomScalar();
+//    if (!bases.empty()) {
+//        Actions()->UnitCommand(unit_to_build,
+//            ability_type_for_structure,
+//            Point2D(bases.front()->pos.x + rx * 15.0f, bases.front()->pos.y + ry * 15.0f));
+//    }
+//    else {
+//        Actions()->UnitCommand(unit_to_build,
+//            ability_type_for_structure,
+//            Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
+//    }
+//    return true;
+//}
 
 
 
 ////NEW ADDED
-bool OrionBot::TryBuildStructureTest(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
+bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
     //std::cout << "Try build" << std::endl;
     const ObservationInterface* observation = Observation();
     Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());

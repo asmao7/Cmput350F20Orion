@@ -56,12 +56,12 @@ void OrionBot::CombinedBuild() {
 			OrionBot::TryBuildBarracks();
 			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
 				FINALSTRATEGY_STATE.morph_techlab = false;
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 3) {
-					FINALSTRATEGY_STATE.produce_banshee = true;
-				}
-				else {
-					FINALSTRATEGY_STATE.produce_banshee = false;
-				}
+			}
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 3) {
+				FINALSTRATEGY_STATE.produce_banshee = true;
+			}
+			else {
+				FINALSTRATEGY_STATE.produce_banshee = false;
 			}
 			break;
 		}
