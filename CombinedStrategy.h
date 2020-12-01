@@ -1,6 +1,8 @@
 
 #include "OrionBot.h"
+#include <iostream>
 
+// some random
 /*
 void OrionBot::CombinedBuild() {
 	switch (FINALSTRATEGY_STATE.currentBuild) {
