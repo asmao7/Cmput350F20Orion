@@ -3,13 +3,17 @@
 
 void OrionBot::Marines12Build() {
 	switch (MARINES12_STATE.current_build) {
+	
 	case STAGE1_MARINES:
-		if (Observation()->GetMinerals() >= 100 && OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) <= 1) {
+		if (Observation()->GetMinerals() >= 100 && OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) <= 2) {
 			OrionBot::TryBuildSupplyDepot();
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
 			MARINES12_STATE.current_build++;
 		}
+
+		scout();
+
 		break;
 
 	case STAGE2_MARINES:
@@ -24,6 +28,7 @@ void OrionBot::Marines12Build() {
 
 			MARINES12_STATE.current_build++;
 		}
+
 		break;
 
 	case STAGE3_MARINES:
@@ -47,8 +52,18 @@ void OrionBot::Marines12Build() {
 
 		break;
 	case STAGE4_ATTACK_MARINES:
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MARINE) >= 10) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MARINE) >= 15) {
 			MARINES12_STATE.attacking = true;
+
+			// Send all units to fight
+			const ObservationInterface* observation = Observation();
+			Units bases = observation->GetUnits();
+
+			for (const auto& base : bases) {
+				if (base->unit_type == UNIT_TYPEID::TERRAN_SCV || base->unit_type == UNIT_TYPEID::TERRAN_MARINE) {
+					Actions()->UnitCommand(base, ABILITY_ID::ATTACK_ATTACK, FindEnemyBase());
+				}
+			}
 		}
 		
 	}
@@ -66,57 +81,63 @@ void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_ORBITALCOMMAND: {	
-		std::cout << "here";
+		//std::cout << "here";
 		if (unit->energy < 50) {
 			break;
 		}
-		std::cout << "AAAA";
+
+		//std::cout << "AAAA";
 		if (!MARINES12_STATE.supplies_called) {
 			tryCalldownExtraSupplies(unit);
+			break;
 		}
 		tryCalldownMULE(unit);
 		
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_SCV: {
-		const GameInfo& game_info = Observation()->GetGameInfo();
-		
-		if (MARINES12_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
-			// send csv to one of the corners and save base location to possible_enemy_bases
-			Point2D location = game_info.enemy_start_locations[MARINES12_STATE.num_units_scouting];
-			Actions()->UnitCommand(unit, ABILITY_ID::MOVE_MOVE, location);
-
-			possible_enemy_bases.push_back(location);
-			enemyBaseValue.push_back(0);
-			MARINES12_STATE.num_units_scouting++;
-		}
-		else {
 			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
 			if (!mineral_target) {
 				break;
 			}
 
 			Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
-		}
 
 		break;
+	}
+	case UNIT_TYPEID::TERRAN_MARINE: {
+		if (MARINES12_STATE.attacking && MARINES12_STATE.i_location < locations_enemy_seen.size()) {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen[MARINES12_STATE.i_location]);
+			MARINES12_STATE.i_location++;
+		}
 	}
 	case UNIT_TYPEID::TERRAN_BARRACKS: {
 		Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);
 		break;
 	}
-	case UNIT_TYPEID::TERRAN_MARINE: {
-		if (MARINES12_STATE.attacking) {
-			const GameInfo& game_info = Observation()->GetGameInfo();
-			// there are 3 enemy_start_locations
-			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen.front());
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, FindEnemyBase());
-		}
-		break;
-	}
 	default: {
 		break;
 	}
+	}
+}
+
+void OrionBot::scout() {
+	const ObservationInterface* observation = Observation();
+	Units bases = observation->GetUnits();
+	const GameInfo& game_info = Observation()->GetGameInfo();
+
+	for (const auto& base : bases) {
+		if (base->unit_type == UNIT_TYPEID::TERRAN_SCV) {
+			if (MARINES12_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
+				// send csv to one of the corners and save base location to possible_enemy_bases
+				Point2D location = game_info.enemy_start_locations[MARINES12_STATE.num_units_scouting];
+				Actions()->UnitCommand(base, ABILITY_ID::MOVE_MOVE, location);
+
+				possible_enemy_bases.push_back(location);
+				enemyBaseValue.push_back(0);
+				MARINES12_STATE.num_units_scouting++;
+			}
+		}
 	}
 }
 

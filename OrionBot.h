@@ -32,23 +32,72 @@ private:
 
 	//Global State Tracker
 	//Lets us know what strategy we are playing
-	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX };
-	int RUSH_STRATEGY = RUSH_BANSHEE;
+	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX, RUSH_FINAL };
+	//int RUSH_STRATEGY = RUSH_BANSHEE;
 	//int RUSH_STRATEGY = RUSH_6RAX;
-	/*int RUSH_STRATEGY = RUSH_12MARINES;*/
+	//int RUSH_STRATEGY = RUSH_12MARINES;
+	int RUSH_STRATEGY = RUSH_FINAL;
+
+	/*  
+	 * FINAL STRATEGY VARIABLES
+	*/
+	struct finalStrategy {
+		finalStrategy() :
+			upgradeOrbital(false), newCommandCentre(false), currentBuild(0),
+			expand(false), attacking(false), num_units_scouting(0) {}
+		bool upgradeOrbital;
+		bool newCommandCentre;
+		int currentBuild;
+		bool expand;
+		int num_units_scouting;
+		bool attacking;
+
+		int raxs = 0;
+		Point2D barracks;
+
+		Point2D tobuildSD;
+		Point2D tobuildRaxs;
+
+		Point2D BOTTOM_LEFT = Point2D(33.5, 33.5);
+		Point2D BOTTOM_RIGHT = Point2D(158.5, 33.5);
+		Point2D TOP_LEFT = Point2D(33.5, 158.5);
+		Point2D TOP_RIGHT = Point2D(158.5, 158.5);
+	};
+	finalStrategy FINALSTRATEGY_STATE;
+	enum final_Strategy { STAGE1_FINALSTRATEGY = 0, STAGE2_FINALSTRATEGY, STAGE3_FINALSTRATEGY, STAGE4_FINALSTRATEGY };
+
+
+	
 
 	//6Rax Rush Strategy Variables
 	//Made by: Asma
 	int max_worker_count_ = 70;
 	struct Rax6 {
 		Rax6() :
-			upgradeOrbital(false), newCommandCentre(false), currentBuild(0) {}
+			upgradeOrbital(false), newCommandCentre(false), currentBuild(0),
+			expand(false), attacking(false), num_units_scouting(0)  {}
 		bool upgradeOrbital;
 		bool newCommandCentre;
 		int currentBuild;
+		bool expand;
+		int num_units_scouting;
+		bool attacking;
+		bool enemy_found = false;
+	
+		int raxs = 0;
+		Point2D barracks;
+
+		Point2D tobuildSD;
+		Point2D tobuildRaxs;
+
+		Point2D BOTTOM_LEFT = Point2D(33.5, 33.5);	
+		Point2D BOTTOM_RIGHT = Point2D(158.5, 33.5);
+		Point2D TOP_LEFT = Point2D(33.5, 158.5);
+		Point2D TOP_RIGHT = Point2D(158.5, 158.5);
 	};
 	Rax6 RAX6_STATE;
 	enum Rax6_Strategy { STAGE1_RAX6 = 0, STAGE2_RAX6, STAGE3_RAX6, STAGE4_RAX6 };
+	
 
 	//Banshee Rush Strategy Variables
 	//Made by: Joe
@@ -71,10 +120,11 @@ private:
 
 
 	//12 Marines Rush Strategy Variables
+
 	struct Marines12 {
 		Marines12() : orbital_upgrade(false), produce_scv(true), current_build(0),
-					orbital_command_upgraded(false), supplies_called(false),
-					attacking(false), num_units_scouting(0)
+			orbital_command_upgraded(false), supplies_called(false),
+			attacking(false), num_units_scouting(0), i_location(0)
 		{}
 		int current_build;
 		bool orbital_upgrade;
@@ -83,6 +133,7 @@ private:
 		bool supplies_called;
 		bool attacking;
 		int num_units_scouting;
+		int i_location;
 	};
 
 	Marines12 MARINES12_STATE;
@@ -92,11 +143,13 @@ private:
 
 	std::vector<Point2D> possible_enemy_bases;
 	std::vector<int> enemyBaseValue;
+
 	//std::map<Point2D, int> possible_enemy_bases;
 	#include "BuildManager.h"
 	#include "Banshee.h"
 	#include "Rax6.h"
 	#include "Marines12.h"
+	#include "CombinedStrategy.h" 
 };
 
 #endif
