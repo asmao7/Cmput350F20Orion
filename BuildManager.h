@@ -12,6 +12,12 @@ bool TryBuildStarport();
 bool TryBuildHellion();
 bool TryBuildSCVs();
 bool TryBuildMarine();
+//added
+bool BuildRefinery();
+bool TryBuildGas(AbilityID build_ability, UnitTypeID worker_type, Point2D base_location);
+bool TryBuildEngineeringBay();
+bool TryBuildGhostAcademy();
+bool FillRefineries();
 
 bool TryBuildCommandCentre();
 const Unit* scouts = NULL;

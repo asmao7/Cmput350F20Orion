@@ -36,8 +36,15 @@ void OrionBot::CombinedBuild() {
 		}
 		case STAGE2_FINALSTRATEGY: {
 			OrionBot::TryBuildCommandCentreExpansion(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1) {
+				OrionBot::TryBuildStarport();
+			}
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
+				OrionBot::TryBuildFactory();
+			}
 			FINALSTRATEGY_STATE.expand = true;
 			if ((FINALSTRATEGY_STATE.newCommandCentre == true)) {
+				FINALSTRATEGY_STATE.morph_techlab = true;
 				FINALSTRATEGY_STATE.currentBuild++;
 				break;
 			}
@@ -47,6 +54,15 @@ void OrionBot::CombinedBuild() {
 		case STAGE3_FINALSTRATEGY: {
 			OrionBot::TryBuildSupplyDepot();
 			OrionBot::TryBuildBarracks();
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
+				FINALSTRATEGY_STATE.morph_techlab = false;
+				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 3) {
+					FINALSTRATEGY_STATE.produce_banshee = true;
+				}
+				else {
+					FINALSTRATEGY_STATE.produce_banshee = false;
+				}
+			}
 			break;
 		}
 		default: {
@@ -96,9 +112,23 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 				Point2D enemyPos = FindEnemyBase();
 				for (int i = 0; i < 3; i++) {
 					if ((possible_enemy_bases[i]) != enemyPos) {
-						TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, possible_enemy_bases[i]);
+						if (TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, possible_enemy_bases[i])) {
+							break;
+						}
 					}
 				}
+				if (AddWorkersToRefineries(unit)) {
+					break;
+				}
+				const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
+				if (!mineral_target) {
+					break;
+				}
+				Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
+				break;
+			}
+			if (AddWorkersToRefineries(unit)) {
+				break;
 			}
 			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
 			if (!mineral_target) {
@@ -106,7 +136,17 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			}
 			Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
 			break;
-
+		}
+		else {
+			if (AddWorkersToRefineries(unit)) {
+				break;
+			}
+			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
+			if (!mineral_target) {
+				break;
+			}
+			Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
+			break;
 		}
 	}
 
@@ -136,7 +176,64 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
 		break;
 	}
-
+	case UNIT_TYPEID::TERRAN_STARPORT: {
+		if (FINALSTRATEGY_STATE.morph_techlab) {
+			Actions()->UnitCommand(unit, ABILITY_ID::BUILD_TECHLAB_STARPORT);
+		}
+		if (FINALSTRATEGY_STATE.produce_banshee) {
+			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_BANSHEE);
+		}
+		break;
+	}
+	case UNIT_TYPEID::TERRAN_FACTORY: {
+		if (FINALSTRATEGY_STATE.morph_techlab) {
+			Actions()->UnitCommand(unit, ABILITY_ID::BUILD_TECHLAB_FACTORY);
+		}
+		else {
+			if (FINALSTRATEGY_STATE.currentBuild >= STAGE3_FINALSTRATEGY) {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SIEGETANK);
+			}
+			else {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_HELLBAT);
+			}
+		}
+		break;
+	}
+	case UNIT_TYPEID::TERRAN_BANSHEE: {
+		if (FINALSTRATEGY_STATE.currentBuild >= STAGE3_FINALSTRATEGY) {
+			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, enemy_units.front()->pos);
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
+		}
+		else {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+		}
+		break;
+	}
+	case UNIT_TYPEID::TERRAN_SIEGETANK: {
+		//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());
+		//Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SIEGEMODE);
+		if (FINALSTRATEGY_STATE.currentBuild >= STAGE3_FINALSTRATEGY) {
+			const ObservationInterface* observation = Observation();
+			Units enemy_units = observation->GetUnits(Unit::Alliance::Enemy);
+			float distance = std::numeric_limits<float>::max();
+			for (const auto& u : enemy_units) {
+				float d = Distance2D(u->pos, unit->pos);
+				if (d < distance) {
+					distance = d;
+				}
+			}
+			if (distance < 11) {
+				Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SIEGEMODE);
+			}
+			else {
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
+			}
+		}
+		else {
+			Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SIEGEMODE);
+		}
+		break;
+	}
 	default: {
 		break;
 	}

@@ -89,6 +89,70 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
     return true;
 }
 
+
+
+////NEW ADDED
+bool OrionBot::TryBuildStructureTest(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
+    //std::cout << "Try build" << std::endl;
+    const ObservationInterface* observation = Observation();
+    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+    //if we have no workers Don't build
+    if (bases.empty()) {
+        return false;
+    }
+    float rx = GetRandomScalar();
+    float ry = GetRandomScalar();
+    Point2D build_location = Point2D(bases.front()->pos.x + rx * 15, bases.front()->pos.y + ry * 15);
+
+    Units units = observation->GetUnits(Unit::Alliance::Self);
+    float distance = std::numeric_limits<float>::max();
+    for (const auto& u : units) {
+        if (u->unit_type == UNIT_TYPEID::TERRAN_SUPPLYDEPOTLOWERED) {
+            continue;
+        }
+        float d = Distance2D(u->pos, build_location);
+        if (d < distance) {
+            distance = d;
+        }
+    }
+    if (distance < 5.5) {
+        return false;
+    }
+
+    Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(unit_type));
+
+    //if we have no workers Don't build
+    if (workers.empty()) {
+        return false;
+    }
+
+    // Check to see if there is already a worker heading out to build it
+    for (const auto& worker : workers) {
+        for (const auto& order : worker->orders) {
+            if (order.ability_id == ability_type_for_structure) {
+                return false;
+            }
+        }
+    }
+
+    // If no worker is already building one, get a random worker to build one
+    const Unit* unit = GetRandomEntry(workers);
+
+    // Check to see if unit can make it there
+    if (Query()->PathingDistance(unit, build_location) < 0.1f) {
+        return false;
+    }
+    // Check to see if unit can build there
+    if (Query()->Placement(ability_type_for_structure, build_location)) {
+        Actions()->UnitCommand(unit, ability_type_for_structure, build_location);
+        return true;
+    }
+    return false;
+}
+
+
+
+
 // From Sc2 Cpp Tutorial
 bool OrionBot::TryBuildSupplyDepot() {
     const ObservationInterface* observation = Observation();
