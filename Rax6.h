@@ -239,6 +239,7 @@ bool OrionBot::TryBuildCommandCentreExpansion(ABILITY_ID ability_type_for_struct
 
 	//RAX6_STATE.currentBuild++;
 	RAX6_STATE.newCommandCentre = true;
+	FINALSTRATEGY_STATE.newCommandCentre = true;
 	return true;
 
 }
