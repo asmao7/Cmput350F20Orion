@@ -140,6 +140,8 @@ private:
 	std::vector<Point2D> possible_enemy_bases;
 	std::vector<int> enemyBaseValue;
 
+	Point2D base_location;
+
 	//std::map<Point2D, int> possible_enemy_bases;
 	#include "BuildManager.h"
 	#include "Banshee.h"

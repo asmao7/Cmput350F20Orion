@@ -96,12 +96,13 @@ void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_SCV: {
-			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
-			if (!mineral_target) {
-				break;
-			}
+		Actions()->UnitCommand(unit, ABILITY_ID::MOVE_MOVE, base_location);
+		const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
+		if (!mineral_target) {
+			break;
+		}
 
-			Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
+		Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
 
 		break;
 	}
@@ -125,6 +126,9 @@ void OrionBot::scout() {
 	const ObservationInterface* observation = Observation();
 	Units bases = observation->GetUnits();
 	const GameInfo& game_info = Observation()->GetGameInfo();
+
+
+	base_location = Observation()->GetStartLocation();
 
 	for (const auto& base : bases) {
 		if (base->unit_type == UNIT_TYPEID::TERRAN_SCV) {
