@@ -28,6 +28,14 @@ private:
 	bool TryBuildSupplyDepot();
 	bool TryBuildBarracks();
 
+	//Global State Tracker
+	//Lets us know what strategy we are playing
+	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX, RUSH_FINAL };
+	//int RUSH_STRATEGY = RUSH_BANSHEE;
+	//int RUSH_STRATEGY = RUSH_6RAX;
+	//int RUSH_STRATEGY = RUSH_12MARINES;
+	int RUSH_STRATEGY = RUSH_FINAL;
+
 	/*  
 	 * FINAL STRATEGY VARIABLES
 	*/
@@ -57,12 +65,7 @@ private:
 	enum final_Strategy { STAGE1_FINALSTRATEGY = 0, STAGE2_FINALSTRATEGY, STAGE3_FINALSTRATEGY, STAGE4_FINALSTRATEGY };
 
 
-	//Global State Tracker
-	//Lets us know what strategy we are playing
-	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX };
-	//int RUSH_STRATEGY = RUSH_BANSHEE;
-	//int RUSH_STRATEGY = RUSH_6RAX;
-	int RUSH_STRATEGY = RUSH_12MARINES;
+	
 
 	//6Rax Rush Strategy Variables
 	//Made by: Asma
