@@ -107,7 +107,7 @@ void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
 	}
 	case UNIT_TYPEID::TERRAN_MARINE: {
 		if (MARINES12_STATE.attacking && MARINES12_STATE.i_location < locations_enemy_seen.size()) {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen[MARINES12_STATE.i_location++]);
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen[MARINES12_STATE.i_location]);
 			MARINES12_STATE.i_location++;
 		}
 	}
