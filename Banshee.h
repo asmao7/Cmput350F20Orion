@@ -110,13 +110,13 @@ void OrionBot::BansheeBuild() {
 		}
 		//23 Supply Depot
 		if (Observation()->GetMinerals() >= 100) {
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 3) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 4) {
 				OrionBot::TryBuildSupplyDepot();
 			}
 		}
 		//23 - Refinery(2) 
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 3) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 2) {
 				if (Observation()->GetMinerals() >= 75) {
 					const ObservationInterface* observation = Observation();
 					Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
@@ -144,6 +144,14 @@ void OrionBot::BansheeBuild() {
 						//OrionBot::TryBuildFactory();
 						BANSHEE_STATE.current_build++;
 					}
+				}
+			}
+			else {
+				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 2) {
+					OrionBot::TryBuildStarport();
+				}
+				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 4) {
+					OrionBot::TryBuildSupplyDepot();
 				}
 			}
 		}
@@ -198,7 +206,7 @@ void OrionBot::BansheeBuild() {
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
 			OrionBot::TryBuildCommandCentre();
 		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 5) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 8) {
 			BANSHEE_STATE.current_build++;
 		}
 		break;
