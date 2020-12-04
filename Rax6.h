@@ -97,6 +97,7 @@ void OrionBot::Rax6Build() {
 
 	}
 }
+// fixed
 
 void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 	switch (unit->unit_type.ToType()) {
