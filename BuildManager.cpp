@@ -73,6 +73,11 @@ bool OrionBot::TryBuildStarport() {
 bool OrionBot::TryBuildEngineeringBay() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_ENGINEERINGBAY);
 }
+//Try to build engineering bay
+//Made by: Joe
+bool OrionBot::TryBuildMissleTurret() {
+    return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_MISSILETURRET);
+}
 //Try to build ghost academy
 //Made by: Joe
 bool OrionBot::TryBuildGhostAcademy() {
@@ -102,6 +107,8 @@ bool OrionBot::AddWorkersToRefineries(const Unit* unit) {
     Units geysers = observation->GetUnits(Unit::Alliance::Self, IsVisibleGeyser());
     for (const auto& geyser : geysers) {
         if (geyser->assigned_harvesters < geyser->ideal_harvesters) {
+            std::cout << geyser->assigned_harvesters << std::endl;
+            std::cout << geyser->ideal_harvesters << std::endl;
             Actions()->UnitCommand(unit, ABILITY_ID::HARVEST_GATHER, geyser);
             return true;
         }
