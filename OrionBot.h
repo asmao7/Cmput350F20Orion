@@ -34,9 +34,9 @@ private:
 	//Lets us know what strategy we are playing
 	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX, RUSH_FINAL };
 	//int RUSH_STRATEGY = RUSH_BANSHEE;
-	//int RUSH_STRATEGY = RUSH_6RAX;
+	int RUSH_STRATEGY = RUSH_6RAX;
 	//int RUSH_STRATEGY = RUSH_12MARINES;
-	int RUSH_STRATEGY = RUSH_FINAL;
+	//int RUSH_STRATEGY = RUSH_FINAL;
 
 	/*  
 	 * FINAL STRATEGY VARIABLES

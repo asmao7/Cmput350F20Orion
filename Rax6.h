@@ -26,12 +26,8 @@ void OrionBot::Rax6Build() {
 		OrionBot::setChokePoints();
 
 		//while (!(RAX6_STATE.enemy_found)) {
-		OrionBot::TryScout();
-		//	if (FindEnemyBase() == RAX6_STATE.BOTTOM_LEFT || FindEnemyBase() == RAX6_STATE.BOTTOM_RIGHT || 
-			//	FindEnemyBase() == RAX6_STATE.TOP_RIGHT || FindEnemyBase()== RAX6_STATE.TOP_LEFT) {
-			//	RAX6_STATE.enemy_found = true;
-			//}
-		//}
+		OrionBot::scout();
+		
 		if (Observation()->GetMinerals() >= 100) {
 			OrionBot::TryBuildStructureAtCP(ABILITY_ID::BUILD_SUPPLYDEPOT, UNIT_TYPEID::TERRAN_SCV, RAX6_STATE.tobuildSD);
 		}
@@ -145,6 +141,7 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 					TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, possible_enemy_bases[i]);
 				}
 			}
+			TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, Point2D(Observation()->GetStartLocation().x, Observation()->GetStartLocation().y));
 		}
 		const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
 		if (!mineral_target) {
