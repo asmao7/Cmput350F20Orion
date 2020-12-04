@@ -34,9 +34,9 @@ private:
 	//Lets us know what strategy we are playing
 	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX, RUSH_FINAL };
 	//int RUSH_STRATEGY = RUSH_BANSHEE;
-	int RUSH_STRATEGY = RUSH_6RAX;
+	//int RUSH_STRATEGY = RUSH_6RAX;
 	//int RUSH_STRATEGY = RUSH_12MARINES;
-	//int RUSH_STRATEGY = RUSH_FINAL;
+	int RUSH_STRATEGY = RUSH_FINAL;
 
 	/*  
 	 * FINAL STRATEGY VARIABLES
@@ -85,6 +85,7 @@ private:
 		int num_units_scouting;
 		bool attacking;
 		bool enemy_found = false;
+		Point2D enemy_base = Point2D(100, 100);
 	
 		int raxs = 0;
 		Point2D barracks;
