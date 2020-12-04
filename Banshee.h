@@ -206,13 +206,21 @@ void OrionBot::BansheeBuild() {
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 3) {
 			OrionBot::TryBuildBarracks();
 		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) < 2) {
+		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) < 2) {
 			OrionBot::TryBuildBarracks();
-		}
+		}*/
 		//39 Siege Tanks
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
 			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 3) {
-				OrionBot::BuildRefinery();
+				//OrionBot::BuildRefinery();
+				if (Observation()->GetMinerals() >= 75) {
+					const ObservationInterface* observation = Observation();
+					Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
+					if (!workers.empty()) {
+						bool vespene_target = false;
+						FindNearestVespeneGeyser(workers.front()->pos);
+					}
+				}
 			}
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
@@ -238,7 +246,15 @@ void OrionBot::BansheeBuild() {
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
 			//if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 4) {
-			OrionBot::BuildRefinery();
+			//OrionBot::BuildRefinery();
+			if (Observation()->GetMinerals() >= 75) {
+				const ObservationInterface* observation = Observation();
+				Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
+				if (!workers.empty()) {
+					bool vespene_target = false;
+					FindNearestVespeneGeyser(workers.front()->pos);
+				}
+			}
 			//}
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) > 0) {
@@ -249,6 +265,15 @@ void OrionBot::BansheeBuild() {
 		}
 		else {
 			BANSHEE_STATE.produce_banshee = false;
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ENGINEERINGBAY) < 1) {
+			OrionBot::TryBuildEngineeringBay();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MISSILETURRET) < 2) {
+			OrionBot::TryBuildMissleTurret();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
+			OrionBot::TryBuildCommandCentre();
 		}
 		//if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
 		//	//BANSHEE_STATE.morph_techlab = false;
@@ -301,11 +326,10 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 			BANSHEE_STATE.num_units_scouting++;
 		}
 		else {
-			const bool vespene_target = FindNearestVespeneGeyser(unit->pos);
+			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
 			if (AddWorkersToRefineries(unit)) {
 				break;
 			}
-			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
 			if (!mineral_target) {
 				break;
 			}
@@ -333,8 +357,8 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 			if (BANSHEE_STATE.current_build >= STAGE4_BANSHEE) {
 				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SIEGETANK);
 			}
-			else {
-				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_HELLBAT);
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_THOR) < 1) {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_THOR);
 			}
 		}
 		break;
@@ -349,6 +373,9 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 		}
 		if (BANSHEE_STATE.produce_banshee) {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_BANSHEE);
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_RAVEN) < 1) {
+			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_RAVEN);
 		}
 		break;
 	}
@@ -387,6 +414,12 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 		const GameInfo& game_info = Observation()->GetGameInfo();
 		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, game_info.enemy_start_locations.front());
 		break;
+	}
+	case UNIT_TYPEID::TERRAN_THOR: {
+		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+	}
+	case UNIT_TYPEID::TERRAN_RAVEN : {
+		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
 	}
 	case UNIT_TYPEID::TERRAN_SIEGETANK: {
 		//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());

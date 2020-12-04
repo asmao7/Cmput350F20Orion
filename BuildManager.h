@@ -18,6 +18,7 @@ bool TryBuildGas(AbilityID build_ability, UnitTypeID worker_type, Point2D base_l
 bool TryBuildEngineeringBay();
 bool TryBuildGhostAcademy();
 bool FillRefineries();
+bool TryBuildMissleTurret();
 
 bool TryBuildCommandCentre();
 const Unit* scouts = NULL;
