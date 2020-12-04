@@ -7,7 +7,7 @@ void OrionBot::CombinedBuild() {
 	switch (FINALSTRATEGY_STATE.currentBuild) {
 		case STAGE1_FINALSTRATEGY: {
 			OrionBot::setChokePoint();
-			OrionBot::TryScout();
+			OrionBot::scout();
 			if (Observation()->GetMinerals() >= 100) {
 				OrionBot::TryBuildStructureAtCP(ABILITY_ID::BUILD_SUPPLYDEPOT, UNIT_TYPEID::TERRAN_SCV, FINALSTRATEGY_STATE.tobuildSD);
 			}
