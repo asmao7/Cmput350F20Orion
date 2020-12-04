@@ -319,38 +319,6 @@ void OrionBot::setChokePoints() {
 }
 
 
-// a
-/*
-void OrionBot::OnUnitEnterVision(const Unit* unit) {
-	if (unit->alliance == Unit::Alliance::Enemy) {
-		locations_enemy_seen.push_back(Point2D(unit->pos));
-
-		// find to what base this location is closest to
-		closestToBase(Point2D(unit->pos));
-	}
-}
-
-void OrionBot::closestToBase(Point2D coord) {
-	float min_distance = FLT_MAX;
-	int min_i = 0;
-
-	for (int i = 0; i < possible_enemy_bases.size(); ++i) {
-		auto distance = DistanceSquared2D(coord, possible_enemy_bases[i]);
-		if (distance < min_distance) {
-			min_distance = distance;
-			min_i = i;
-		}
-	}
-	enemyBaseValue[min_i] += 1;
-	return;
-}
-
-Point2D OrionBot::FindEnemyBase() {
-	auto position = std::distance(enemyBaseValue.begin(), std::max_element(enemyBaseValue.begin(), enemyBaseValue.end()));
-	Point2D point = possible_enemy_bases[position];
-	return point;
-}*/
-
 
 void OrionBot::TryScout() {
 	const ObservationInterface* observation = Observation();
