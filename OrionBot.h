@@ -34,9 +34,9 @@ private:
 	//Lets us know what strategy we are playing
 	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX, RUSH_FINAL };
 	//int RUSH_STRATEGY = RUSH_BANSHEE;
-	//int RUSH_STRATEGY = RUSH_6RAX;
+	int RUSH_STRATEGY = RUSH_6RAX;
 	//int RUSH_STRATEGY = RUSH_12MARINES;
-	int RUSH_STRATEGY = RUSH_FINAL;
+	//int RUSH_STRATEGY = RUSH_FINAL;
 
 	/*  
 	 * FINAL STRATEGY VARIABLES
@@ -98,7 +98,7 @@ private:
 		Point2D TOP_RIGHT = Point2D(158.5, 158.5);
 	};
 	Rax6 RAX6_STATE;
-	enum Rax6_Strategy { STAGE1_RAX6 = 0, STAGE2_RAX6, STAGE3_RAX6, STAGE4_RAX6 };
+	enum Rax6_Strategy { STAGE1_RAX6 = 0, STAGE2_RAX6, STAGE3_RAX6, STAGE4_RAX6, STAGE5_RAX6 };
 	
 
 	//Banshee Rush Strategy Variables
