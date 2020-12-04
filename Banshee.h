@@ -166,24 +166,30 @@ void OrionBot::BansheeBuild() {
 			OrionBot::TryBuildSupplyDepot();
 		}
 		BANSHEE_STATE.morph_reactor = true;
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
+		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
 			OrionBot::TryBuildFactory();
-		}
+		}*/
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) >= 0) {
 			BANSHEE_STATE.morph_techlab = true;
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
 			OrionBot::TryBuildCommandCentre();
 		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 2) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 2) {
+			BANSHEE_STATE.produce_banshee = true;
+		}
+		else {
+			BANSHEE_STATE.produce_banshee = false;
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 1) {
 			//OrionBot::TryBuildSupplyDepot();
 			BANSHEE_STATE.morph_reactor = false;
 			BANSHEE_STATE.morph_techlab = false;
 			BANSHEE_STATE.current_build++;
 		}
-		else {
+		/*else {
 			OrionBot::TryBuildFactory();
-		}
+		}*/
 		break;
 	}
 	case STAGE4_BANSHEE: {
@@ -192,10 +198,13 @@ void OrionBot::BansheeBuild() {
 			//39 Supply Depot
 		std::cout << STAGE4_BANSHEE << std::endl;
 		if (Observation()->GetMinerals() >= 100) {
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 7) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 8) {
 				//OrionBot::TryBuildSupplyDepot();
 				OrionBot::TryBuildSupplyDepot();
 			}
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 3) {
+			OrionBot::TryBuildBarracks();
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) < 2) {
 			OrionBot::TryBuildBarracks();
@@ -208,6 +217,12 @@ void OrionBot::BansheeBuild() {
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
 			OrionBot::TryBuildCommandCentre();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 2) {
+			BANSHEE_STATE.produce_banshee = true;
+		}
+		else {
+			BANSHEE_STATE.produce_banshee = false;
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 5) {
 			BANSHEE_STATE.current_build++;
@@ -229,10 +244,16 @@ void OrionBot::BansheeBuild() {
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_COMMANDCENTER) > 0) {
 			OrionBot::TryBuildBarracks();
 		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
-			//BANSHEE_STATE.morph_techlab = false;
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 2) {
 			BANSHEE_STATE.produce_banshee = true;
 		}
+		else {
+			BANSHEE_STATE.produce_banshee = false;
+		}
+		//if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
+		//	//BANSHEE_STATE.morph_techlab = false;
+		//	BANSHEE_STATE.produce_banshee = true;
+		//}
 		break;
 	}
 	default: {
