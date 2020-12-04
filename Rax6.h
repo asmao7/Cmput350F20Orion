@@ -8,15 +8,12 @@
 	12 - Refinery	~ DONE!
 	13 - Barracks @ choke point	~ DONE!
 	16 - Orbital Command ~DONE!
-
 	STAGE2
 	- Base expansion ~ SOMETIMES DOESN'T WORK - need to fix!
-
 	STAGE3
 	- Perform a scan sweep on the corners until   ~ done but need to find a way to notify the bot about the scan
 	  the enemy base is found
 	- send all the marines there		~ sendng to random cornor for now
-
 	STAGE4
 	- more barracks to train marines for attacking		  ~done
 	- build the barracks in a line to shield the CC
@@ -27,9 +24,9 @@ void OrionBot::Rax6Build() {
 	switch (RAX6_STATE.currentBuild) {
 	case STAGE1_RAX6:
 		OrionBot::setChokePoints();
-		
+
 		//while (!(RAX6_STATE.enemy_found)) {
-			OrionBot::TryScout();
+		OrionBot::TryScout();
 		//	if (FindEnemyBase() == RAX6_STATE.BOTTOM_LEFT || FindEnemyBase() == RAX6_STATE.BOTTOM_RIGHT || 
 			//	FindEnemyBase() == RAX6_STATE.TOP_RIGHT || FindEnemyBase()== RAX6_STATE.TOP_LEFT) {
 			//	RAX6_STATE.enemy_found = true;
@@ -95,9 +92,14 @@ void OrionBot::Rax6Build() {
 		}
 		break;
 
+	case STAGE5_RAX6:
+		TryBuildSupplyDepot();
+		TryBuildBarracks();
+		TryBuildBarracks();
+		break;
+
 	}
 }
-// fixed
 
 void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 	switch (unit->unit_type.ToType()) {
@@ -132,12 +134,11 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 			// send csv to one of the corners and save base location to possible_enemy_bases
 			Point2D location = game_info.enemy_start_locations[RAX6_STATE.num_units_scouting];
 			Actions()->UnitCommand(unit, ABILITY_ID::MOVE_MOVE, location);
-
 			possible_enemy_bases.push_back(location);
 			enemyBaseValue.push_back(0);
 			RAX6_STATE.num_units_scouting++;
 		}*/
-		if(RAX6_STATE.expand){
+		if (RAX6_STATE.expand) {
 			Point2D enemyPos = FindEnemyBase();
 			for (int i = 0; i < 3; i++) {
 				if ((possible_enemy_bases[i]) != enemyPos) {
@@ -151,7 +152,7 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 		}
 		Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
 		break;
-		
+
 	}
 
 	case UNIT_TYPEID::TERRAN_BARRACKS: {
@@ -189,7 +190,7 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 
 
 
-/* 
+/*
 * Build a new command centre at the expansion location.
 */
 bool OrionBot::TryBuildCommandCentreExpansion(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
@@ -246,7 +247,7 @@ bool OrionBot::TryBuildCommandCentreExpansion(ABILITY_ID ability_type_for_struct
 }
 
 
-/* 
+/*
  * Takes in positure and builds the specified structure at the specified location
 */
 bool OrionBot::TryBuildStructureAtCP(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type, Point2D toBuildPos) {
@@ -284,7 +285,7 @@ bool OrionBot::TryBuildStructureAtCP(ABILITY_ID ability_type_for_structure, UNIT
 	return true;
 }
 
-/* 
+/*
  * Set the positions of chike points for SD and rax
  * for each of the four corners.
 */
@@ -314,6 +315,34 @@ void OrionBot::setChokePoints() {
 }
 
 
+// a
+/*
+void OrionBot::OnUnitEnterVision(const Unit* unit) {
+	if (unit->alliance == Unit::Alliance::Enemy) {
+		locations_enemy_seen.push_back(Point2D(unit->pos));
+		// find to what base this location is closest to
+		closestToBase(Point2D(unit->pos));
+	}
+}
+void OrionBot::closestToBase(Point2D coord) {
+	float min_distance = FLT_MAX;
+	int min_i = 0;
+	for (int i = 0; i < possible_enemy_bases.size(); ++i) {
+		auto distance = DistanceSquared2D(coord, possible_enemy_bases[i]);
+		if (distance < min_distance) {
+			min_distance = distance;
+			min_i = i;
+		}
+	}
+	enemyBaseValue[min_i] += 1;
+	return;
+}
+Point2D OrionBot::FindEnemyBase() {
+	auto position = std::distance(enemyBaseValue.begin(), std::max_element(enemyBaseValue.begin(), enemyBaseValue.end()));
+	Point2D point = possible_enemy_bases[position];
+	return point;
+}*/
+
 
 void OrionBot::TryScout() {
 	const ObservationInterface* observation = Observation();
@@ -330,8 +359,8 @@ void OrionBot::TryScout() {
 		enemyBaseValue.push_back(0);
 		RAX6_STATE.num_units_scouting++;
 
-		if (FindEnemyBase() == RAX6_STATE.BOTTOM_LEFT || FindEnemyBase() == RAX6_STATE.BOTTOM_RIGHT || 
-			FindEnemyBase() == RAX6_STATE.TOP_RIGHT || FindEnemyBase()== RAX6_STATE.TOP_LEFT) {
+		if (FindEnemyBase() == RAX6_STATE.BOTTOM_LEFT || FindEnemyBase() == RAX6_STATE.BOTTOM_RIGHT ||
+			FindEnemyBase() == RAX6_STATE.TOP_RIGHT || FindEnemyBase() == RAX6_STATE.TOP_LEFT) {
 			RAX6_STATE.enemy_found = true;
 		}
 	}
