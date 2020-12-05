@@ -27,12 +27,45 @@ private:
 	const Unit* FindNearestMineralPatch(const Point2D& start);
 	bool TryBuildSupplyDepot();
 	bool TryBuildBarracks();
+	//ADDED
+	//bool OrionBot::TryBuildStructureTest(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type);
+
+	//Global State Tracker
+	//Lets us know what strategy we are playing
+	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX, RUSH_FINAL };
+	//int RUSH_STRATEGY = RUSH_BANSHEE;
+	//int RUSH_STRATEGY = RUSH_6RAX;
+	//int RUSH_STRATEGY = RUSH_12MARINES;
+	int RUSH_STRATEGY = RUSH_FINAL;
 
 	/*  
 	 * FINAL STRATEGY VARIABLES
 	*/
-	struct finalStrategy {
-		finalStrategy() :
+	struct FinalStrategy {
+		FinalStrategy() :
+			orbital_upgrade(false), produce_hellion(false), produce_banshee(false),
+			morph_techlab(false), morph_reactor(false), current_build(0), num_units_scouting(0)
+		{
+		}
+		bool orbital_upgrade;
+		bool produce_hellion;
+		bool produce_banshee;
+		bool morph_techlab;
+		bool morph_reactor;
+		int current_build;
+		int num_units_scouting;
+	};
+	FinalStrategy FINALSTRATEGY_STATE;
+	enum Final_Strategy { STAGE1_FINALSTRATEGY = 0, STAGE2_FINALSTRATEGY, STAGE3_FINALSTRATEGY, STAGE4_FINALSTRATEGY, STAGE5_FINALSTRATEGY};
+
+
+	
+
+	//6Rax Rush Strategy Variables
+	//Made by: Asma
+	int max_worker_count_ = 70;
+	struct Rax6 {
+		Rax6() :
 			upgradeOrbital(false), newCommandCentre(false), currentBuild(0),
 			expand(false), attacking(false), num_units_scouting(0) {}
 		bool upgradeOrbital;
@@ -41,43 +74,8 @@ private:
 		bool expand;
 		int num_units_scouting;
 		bool attacking;
-
-		int raxs = 0;
-		Point2D barracks;
-
-		Point2D tobuildSD;
-		Point2D tobuildRaxs;
-
-		Point2D BOTTOM_LEFT = Point2D(33.5, 33.5);
-		Point2D BOTTOM_RIGHT = Point2D(158.5, 33.5);
-		Point2D TOP_LEFT = Point2D(33.5, 158.5);
-		Point2D TOP_RIGHT = Point2D(158.5, 158.5);
-	};
-	finalStrategy FINALSTRATEGY_STATE;
-	enum final_Strategy { STAGE1_FINALSTRATEGY = 0, STAGE2_FINALSTRATEGY, STAGE3_FINALSTRATEGY, STAGE4_FINALSTRATEGY };
-
-
-	//Global State Tracker
-	//Lets us know what strategy we are playing
-	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX };
-	//int RUSH_STRATEGY = RUSH_BANSHEE;
-	//int RUSH_STRATEGY = RUSH_6RAX;
-	int RUSH_STRATEGY = RUSH_12MARINES;
-
-	//6Rax Rush Strategy Variables
-	//Made by: Asma
-	int max_worker_count_ = 70;
-	struct Rax6 {
-		Rax6() :
-			upgradeOrbital(false), newCommandCentre(false), currentBuild(0),
-			expand(false), attacking(false), num_units_scouting(0)  {}
-		bool upgradeOrbital;
-		bool newCommandCentre;
-		int currentBuild;
-		bool expand;
-		int num_units_scouting;
-		bool attacking;
 		bool enemy_found = false;
+		Point2D enemy_base = Point2D(100, 100);
 	
 		int raxs = 0;
 		Point2D barracks;
@@ -91,19 +89,15 @@ private:
 		Point2D TOP_RIGHT = Point2D(158.5, 158.5);
 	};
 	Rax6 RAX6_STATE;
-	enum Rax6_Strategy { STAGE1_RAX6 = 0, STAGE2_RAX6, STAGE3_RAX6, STAGE4_RAX6 };
+	enum Rax6_Strategy { STAGE1_RAX6 = 0, STAGE2_RAX6, STAGE3_RAX6, STAGE4_RAX6, STAGE5_RAX6 };
 	
-
-
-	//12 Marines Rush Strategy Variables
-
 
 	//Banshee Rush Strategy Variables
 	//Made by: Joe
 	struct Banshee {
 		Banshee() :
 			orbital_upgrade(false), produce_hellion(false), produce_banshee(false), 
-			morph_techlab(false), morph_reactor(false), current_build(0)
+			morph_techlab(false), morph_reactor(false), current_build(0), num_units_scouting(0)
 		{
 		}
 		bool orbital_upgrade;
@@ -112,10 +106,13 @@ private:
 		bool morph_techlab;
 		bool morph_reactor;
 		int current_build;
+		int num_units_scouting;
 	};
 	Banshee BANSHEE_STATE;
-	enum Banshee_Strategy { STAGE1_BANSHEE = 0, STAGE2_BANSHEE, STAGE3_BANSHEE, STAGE4_BANSHEE };
+	enum Banshee_Strategy { STAGE1_BANSHEE = 0, STAGE2_BANSHEE, STAGE3_BANSHEE, STAGE4_BANSHEE, STAGE5_BANSHEE};
 
+
+	//12 Marines Rush Strategy Variables
 
 	struct Marines12 {
 		Marines12() : orbital_upgrade(false), produce_scv(true), current_build(0),
@@ -148,6 +145,7 @@ private:
 	#include "Rax6.h"
 	#include "Marines12.h"
 	#include "CombinedStrategy.h" 
+	#include "MapManager.h"
 };
 
 #endif
