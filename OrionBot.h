@@ -153,6 +153,7 @@ private:
 	#include "Rax6.h"
 	#include "Marines12.h"
 	#include "CombinedStrategy.h" 
+	#include "MapManager.h"
 };
 
 #endif
