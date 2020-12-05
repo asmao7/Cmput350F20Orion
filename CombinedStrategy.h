@@ -7,18 +7,6 @@ void OrionBot::CombinedBuild() {
 		//OrionBot::scout();
 		OrionBot::TryBuildSupplyDepot();
 		// 12 - Refinery
-		//if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) > 0) {
-		//	if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) < 1) {
-		//		if (Observation()->GetMinerals() >= 75) {
-		//			const ObservationInterface* observation = Observation();
-		//			Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
-		//			if (!workers.empty()) {
-		//				bool vespene_target = false;
-		//				FindNearestVespeneGeyser(workers.front()->pos);
-		//			}
-		//		}
-		//	}
-		//}
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
 		// 13 - Barracks
@@ -79,14 +67,6 @@ void OrionBot::CombinedBuild() {
 		//23 Supply Depot
 		OrionBot::TryBuildSupplyDepot();
 		//23 - Refinery(2) 
-		/*if (Observation()->GetMinerals() >= 75) {
-			const ObservationInterface* observation = Observation();
-			Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(UNIT_TYPEID::TERRAN_SCV));
-			if (!workers.empty()) {
-				bool vespene_target = false;
-				FindNearestVespeneGeyser(workers.front()->pos);
-			}
-		}*/
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
 
@@ -102,9 +82,6 @@ void OrionBot::CombinedBuild() {
 					if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) >= 1) {
 						FINALSTRATEGY_STATE.produce_banshee = false;
 						FINALSTRATEGY_STATE.produce_hellion = false;
-						//BANSHEE_STATE.morph_techlab = false;
-						//OrionBot::TryBuildSupplyDepot();
-						//OrionBot::TryBuildFactory();
 						FINALSTRATEGY_STATE.current_build++;
 					}
 				}
@@ -124,9 +101,6 @@ void OrionBot::CombinedBuild() {
 		std::cout << STAGE3_FINALSTRATEGY << std::endl;
 		OrionBot::TryBuildSupplyDepot();
 		FINALSTRATEGY_STATE.morph_reactor = true;
-		//if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKSTECHLAB) < 1) {
-		//	OrionBot::TryBuildFactory();
-		//}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1 || OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
 			FINALSTRATEGY_STATE.current_build = STAGE2_BANSHEE;
 		}
@@ -144,7 +118,6 @@ void OrionBot::CombinedBuild() {
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKSREACTOR) > 0) {
 			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 1) {
-				//OrionBot::TryBuildSupplyDepot();
 				FINALSTRATEGY_STATE.morph_reactor = false;
 				FINALSTRATEGY_STATE.morph_techlab = false;
 				FINALSTRATEGY_STATE.current_build++;
@@ -164,9 +137,6 @@ void OrionBot::CombinedBuild() {
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 2) {
 			OrionBot::TryBuildBarracks();
 		}
-		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
-			OrionBot::TryBuildFactory();
-		}*/
 		//39 Siege Tanks
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
@@ -361,8 +331,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
 	}
 	case UNIT_TYPEID::TERRAN_SIEGETANK: {
-		//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());
-		//Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SIEGEMODE);
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
 			const ObservationInterface* observation = Observation();
 			Units enemy_units = observation->GetUnits(Unit::Alliance::Enemy);
@@ -408,7 +376,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::MORPH_UNSIEGE);
 		}
-		//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, OrionBot::FindEnemyBase());
 		break;
 	}
 	default: {
