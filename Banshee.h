@@ -169,6 +169,9 @@ void OrionBot::BansheeBuild() {
 		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
 			OrionBot::TryBuildFactory();
 		}*/
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1 || OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
+			BANSHEE_STATE.current_build = STAGE2_BANSHEE;
+		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) >= 0) {
 			BANSHEE_STATE.morph_techlab = true;
 		}
@@ -232,6 +235,9 @@ void OrionBot::BansheeBuild() {
 		else {
 			BANSHEE_STATE.produce_banshee = false;
 		}
+		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1 || OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
+			BANSHEE_STATE.current_build = STAGE2_BANSHEE;
+		}*/
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 5) {
 			BANSHEE_STATE.current_build++;
 		}
@@ -275,6 +281,9 @@ void OrionBot::BansheeBuild() {
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
 			OrionBot::TryBuildCommandCentre();
 		}
+		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1 || OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
+			BANSHEE_STATE.current_build = STAGE2_BANSHEE;
+		}*/
 		//if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORTTECHLAB) > 0) {
 		//	//BANSHEE_STATE.morph_techlab = false;
 		//	BANSHEE_STATE.produce_banshee = true;
@@ -289,7 +298,7 @@ void OrionBot::BansheeBuild() {
 }
 
 void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
-	Units enemy_units = Observation()->GetUnits(Unit::Alliance::Enemy);
+	//Units enemy_units = Observation()->GetUnits(Unit::Alliance::Enemy);
 	switch (unit->unit_type.ToType()) {
 	case UNIT_TYPEID::TERRAN_COMMANDCENTER: {
 		if (BANSHEE_STATE.orbital_upgrade) {
