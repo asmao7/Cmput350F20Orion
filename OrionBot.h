@@ -50,6 +50,7 @@ private:
 		int currentBuild;
 		bool morph_techlab;
 		bool produce_banshee;
+		//bool produce_tank;
 		bool expand;
 		int num_units_scouting;
 		bool attacking;
@@ -66,7 +67,7 @@ private:
 		Point2D TOP_RIGHT = Point2D(158.5, 158.5);
 	};
 	finalStrategy FINALSTRATEGY_STATE;
-	enum final_Strategy { STAGE1_FINALSTRATEGY = 0, STAGE2_FINALSTRATEGY, STAGE3_FINALSTRATEGY, STAGE4_FINALSTRATEGY };
+	enum final_Strategy { STAGE1_FINALSTRATEGY = 0, STAGE2_FINALSTRATEGY, STAGE3_FINALSTRATEGY, STAGE4_FINALSTRATEGY, STAGE5_FINALSTRATEGY};
 
 
 	

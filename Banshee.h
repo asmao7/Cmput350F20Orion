@@ -184,15 +184,17 @@ void OrionBot::BansheeBuild() {
 		else {
 			BANSHEE_STATE.produce_banshee = false;
 		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 1) {
-			//OrionBot::TryBuildSupplyDepot();
-			BANSHEE_STATE.morph_reactor = false;
-			BANSHEE_STATE.morph_techlab = false;
-			BANSHEE_STATE.current_build++;
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKSREACTOR) > 0) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 1) {
+				//OrionBot::TryBuildSupplyDepot();
+				BANSHEE_STATE.morph_reactor = false;
+				BANSHEE_STATE.morph_techlab = false;
+				BANSHEE_STATE.current_build++;
+			}
+			else {
+				OrionBot::TryBuildFactory();
+			}
 		}
-		/*else {
-			OrionBot::TryBuildFactory();
-		}*/
 		break;
 	}
 	case STAGE4_BANSHEE: {
@@ -348,7 +350,7 @@ void OrionBot::BansheeOnUnitIdle(const Unit* unit) {
 	}
 	case UNIT_TYPEID::TERRAN_BARRACKS: {
 		if (BANSHEE_STATE.morph_reactor) {
-			Actions()->UnitCommand(unit, ABILITY_ID::BARRACKSREACTORMORPH_REACTOR);
+			Actions()->UnitCommand(unit, ABILITY_ID::BUILD_REACTOR_BARRACKS);
 		}
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);

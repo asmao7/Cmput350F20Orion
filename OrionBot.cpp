@@ -115,7 +115,7 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
             distance = d;
         }
     }
-    if (distance < 5.5) {
+    if (distance < 6) {
         return false;
     }
 
@@ -171,10 +171,6 @@ bool OrionBot::TryBuildSupplyDepot() {
 // Modified Slightly
 bool OrionBot::TryBuildBarracks() {
     const ObservationInterface* observation = Observation();
-
-    if (CountUnitType(UNIT_TYPEID::TERRAN_SUPPLYDEPOT) < 1) {
-        return false;
-    }
 
     return TryBuildStructure(ABILITY_ID::BUILD_BARRACKS);
 }
