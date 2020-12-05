@@ -30,6 +30,8 @@ $ cmake ../ -G "Visual Studio 16 2019"
 $ start OrionBot.sln
 
 :: Play against built-in AI by specifying command line arguments
-.\OrionBot.exe -c -a zerg -d hard -m CactusValleyLE.SC2Map
+.\OrionBot.exe -c -a zerg -d Hard -m CactusValleyLE.SC2Map
+.\OrionBot.exe -c -a zerg -d Hard -m BelShirVestigeLE.SC2Map
+.\OrionBot.exe -c -a zerg -d Hard -m ProximaStationLE.SC2Map
 ```
 

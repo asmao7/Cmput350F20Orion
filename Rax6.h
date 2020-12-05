@@ -116,7 +116,7 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 				break;
 			}
 			Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_CALLDOWNMULE, mineral_target);
-			//Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_SCAN, Point2D(150, 33.5));
+			//Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_SCAN, Point2D(158.5, 33.5));
 		}
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SCV);

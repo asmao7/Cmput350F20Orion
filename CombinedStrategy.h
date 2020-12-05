@@ -98,7 +98,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 	}
 	case UNIT_TYPEID::TERRAN_SCV: {
 		const GameInfo& game_info = Observation()->GetGameInfo();
-
+		/*
 		if (FINALSTRATEGY_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
 			// send csv to one of the corners and save base location to possible_enemy_bases
 			Point2D location = game_info.enemy_start_locations[FINALSTRATEGY_STATE.num_units_scouting];
@@ -107,49 +107,25 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			possible_enemy_bases.push_back(location);
 			enemyBaseValue.push_back(0);
 			FINALSTRATEGY_STATE.num_units_scouting++;
+		}*/
 
-			if (FINALSTRATEGY_STATE.expand) {
-				Point2D enemyPos = FindEnemyBase();
-				for (int i = 0; i < 3; i++) {
-					if ((possible_enemy_bases[i]) != enemyPos) {
-						if (TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, possible_enemy_bases[i])) {
-							break;
-						}
+		if (FINALSTRATEGY_STATE.expand) {
+			Point2D enemyPos = FindEnemyBase();
+			for (int i = 0; i < 3; i++) {
+				if ((possible_enemy_bases[i]) != enemyPos) {
+					if (TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, possible_enemy_bases[i])) {
+						break;
 					}
 				}
-				TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, Point2D(Observation()->GetStartLocation().x, Observation()->GetStartLocation().y));
-
-				if (AddWorkersToRefineries(unit)) {
-					break;
-				}
-				const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
-				if (!mineral_target) {
-					break;
-				}
-				Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
-				break;
 			}
-			if (AddWorkersToRefineries(unit)) {
-				break;
-			}
-			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
-			if (!mineral_target) {
-				break;
-			}
-			Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
+			TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, Point2D(Observation()->GetStartLocation().x, Observation()->GetStartLocation().y));
+		}
+		const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
+		if (!mineral_target) {
 			break;
 		}
-		else {
-			if (AddWorkersToRefineries(unit)) {
-				break;
-			}
-			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
-			if (!mineral_target) {
-				break;
-			}
-			Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
-			break;
-		}
+		Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
+		break;
 	}
 
 	case UNIT_TYPEID::TERRAN_BARRACKS: {

@@ -85,6 +85,7 @@ private:
 		int num_units_scouting;
 		bool attacking;
 		bool enemy_found = false;
+		Point2D enemy_base = Point2D(100, 100);
 	
 		int raxs = 0;
 		Point2D barracks;
