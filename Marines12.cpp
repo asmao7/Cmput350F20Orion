@@ -207,6 +207,7 @@ Point2D OrionBot::FindEnemyBase() {
 	return point;
 }
 
+
 void OrionBot::attack() {
 	// Send all units to fight
 	std::cout << "attack" << std::endl;

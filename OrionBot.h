@@ -36,8 +36,8 @@ private:
 	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX, RUSH_FINAL };
 	//int RUSH_STRATEGY = RUSH_BANSHEE;
 	//int RUSH_STRATEGY = RUSH_6RAX;
-	int RUSH_STRATEGY = RUSH_12MARINES;
-	//int RUSH_STRATEGY = RUSH_FINAL;
+	//int RUSH_STRATEGY = RUSH_12MARINES;
+	int RUSH_STRATEGY = RUSH_FINAL;
 
 	/*  
 	 * FINAL STRATEGY VARIABLES
@@ -144,8 +144,11 @@ private:
 
 	bool found_locations = false;
 	bool next = false;
+	bool wait;
 
 	Point2D base_location;
+
+	Point2D current_location;
 
 	//std::map<Point2D, int> possible_enemy_bases;
 	#include "BuildManager.h"
