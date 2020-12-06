@@ -118,6 +118,7 @@ void OrionBot::CombinedBuild() {
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 1) {
 			FINALSTRATEGY_STATE.morph_reactor = false;
 			FINALSTRATEGY_STATE.morph_techlab = false;
+			OrionBot::TryBuildSupplyDepot();
 			FINALSTRATEGY_STATE.current_build++;
 		}
 		else {
@@ -151,8 +152,8 @@ void OrionBot::CombinedBuild() {
 		if (FINALSTRATEGY_STATE.newCommandCentre == false) {
 			TryBuildCommandCentreExpansion(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
 		}
-
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 5) {
+		OrionBot::TryBuildSupplyDepot();
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 3) {
 			FINALSTRATEGY_STATE.current_build++;
 		}
 		break;
@@ -207,17 +208,15 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			if (!mineral_target) {
 				break;
 			}
-			//OrionBot::tryCalldownExtraSupplies(unit);
-			Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_CALLDOWNMULE, mineral_target);
+			if (FINALSTRATEGY_STATE.current_build < STAGE3_FINALSTRATEGY) {
+				Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_CALLDOWNMULE, mineral_target);
+			}
+			else {
+				OrionBot::tryCalldownExtraSupplies(unit);
+			}	
 		}
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SCV);
-		}
-		break;
-	}
-	case UNIT_TYPEID::TERRAN_SUPPLYDEPOT: {
-		if (FINALSTRATEGY_STATE.current_build >= STAGE4_BANSHEE) {
-			Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SUPPLYDEPOT_LOWER);
 		}
 		break;
 	}
