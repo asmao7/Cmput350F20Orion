@@ -143,9 +143,6 @@ void OrionBot::CombinedBuild() {
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
 
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
-			OrionBot::TryBuildCommandCentre();
-		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 3) {
 			FINALSTRATEGY_STATE.produce_banshee = true;
 		}
@@ -185,9 +182,6 @@ void OrionBot::CombinedBuild() {
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MISSILETURRET) < 2) {
 			OrionBot::TryBuildMissleTurret();
-		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
-			OrionBot::TryBuildCommandCentre();
 		}
 		break;
 	}
