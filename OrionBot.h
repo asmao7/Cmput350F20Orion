@@ -9,6 +9,7 @@
 #include "sc2api/sc2_unit_filters.h"
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <map>
 
 #include <cstddef>
@@ -136,9 +137,19 @@ private:
 	enum Marines12_Strategy { STAGE1_MARINES = 0, STAGE2_MARINES, STAGE3_MARINES, STAGE4_ATTACK_MARINES };
 
 	std::vector<Point2D> locations_enemy_seen;
+	std::queue<Point2D> locations_enemy_seen2;
 
 	std::vector<Point2D> possible_enemy_bases;
+	std::vector<Point3D>expansion_locations;
 	std::vector<int> enemyBaseValue;
+
+	bool found_locations = false;
+	bool next = false;
+	bool wait;
+
+	Point2D base_location;
+
+	Point2D current_location;
 
 	//std::map<Point2D, int> possible_enemy_bases;
 	#include "BuildManager.h"

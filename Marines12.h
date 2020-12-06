@@ -41,3 +41,5 @@ void OrionBot::closestToBase(Point2D coord);
 Point2D OrionBot::FindEnemyBase();
 
 void OrionBot::scout();
+
+void OrionBot::attack();
