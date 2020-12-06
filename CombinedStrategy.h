@@ -70,9 +70,9 @@ void OrionBot::CombinedBuild() {
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
 
-		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
 			OrionBot::TryBuildFactory();
-		}*/
+		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
 			OrionBot::TryBuildCommandCentre();
 		}
@@ -134,7 +134,7 @@ void OrionBot::CombinedBuild() {
 			//39 Supply Depot
 		std::cout << STAGE4_FINALSTRATEGY << std::endl;
 		OrionBot::TryBuildSupplyDepot();
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 2) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 3) {
 			OrionBot::TryBuildBarracks();
 		}
 		//39 Siege Tanks
@@ -151,7 +151,7 @@ void OrionBot::CombinedBuild() {
 			FINALSTRATEGY_STATE.produce_banshee = false;
 		}
 
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 6) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 5) {
 			FINALSTRATEGY_STATE.current_build++;
 		}
 		break;
@@ -283,7 +283,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		if (FINALSTRATEGY_STATE.produce_banshee) {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_BANSHEE);
 		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_RAVEN) < 1) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_RAVEN) < 2) {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_RAVEN);
 		}
 		break;
@@ -328,7 +328,13 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
 	}
 	case UNIT_TYPEID::TERRAN_RAVEN: {
-		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
+			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, enemy_units.front()->pos);
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
+		}
+		else {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+		}
 	}
 	case UNIT_TYPEID::TERRAN_SIEGETANK: {
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
