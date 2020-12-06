@@ -55,6 +55,8 @@ void OrionBot::Marines12Build() {
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MARINE) >= 15) {
 			MARINES12_STATE.attacking = true;
 
+			attack();
+			/*
 			// Send all units to fight
 			const ObservationInterface* observation = Observation();
 			Units bases = observation->GetUnits();
@@ -63,7 +65,7 @@ void OrionBot::Marines12Build() {
 				if (base->unit_type == UNIT_TYPEID::TERRAN_SCV || base->unit_type == UNIT_TYPEID::TERRAN_MARINE) {
 					Actions()->UnitCommand(base, ABILITY_ID::ATTACK_ATTACK, FindEnemyBase());
 				}
-			}
+			}*/
 		}
 		
 	}
@@ -103,14 +105,21 @@ void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
 		}
 
 		Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
-
+		if (MARINES12_STATE.attacking) {
+			next = true;
+		}
+		
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_MARINE: {
+		if (MARINES12_STATE.attacking) {
+			next = true;
+		}
+		/*
 		if (MARINES12_STATE.attacking && MARINES12_STATE.i_location < locations_enemy_seen.size()) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen[MARINES12_STATE.i_location]);
 			MARINES12_STATE.i_location++;
-		}
+		}*/
 	}
 	case UNIT_TYPEID::TERRAN_BARRACKS: {
 		Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);
@@ -127,9 +136,12 @@ void OrionBot::scout() {
 	Units bases = observation->GetUnits();
 	const GameInfo& game_info = Observation()->GetGameInfo();
 
-
 	base_location = Observation()->GetStartLocation();
-
+	if (!found_locations) {
+		expansion_locations = search::CalculateExpansionLocations(Observation(), Query());
+		found_locations = true;
+	}
+	
 	for (const auto& base : bases) {
 		if (base->unit_type == UNIT_TYPEID::TERRAN_SCV) {
 			if (MARINES12_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
@@ -167,7 +179,8 @@ void OrionBot::OnUnitEnterVision(const Unit* unit) {
 	if (unit->alliance == Unit::Alliance::Enemy) {
 		//std::cout << "See enemy" << std::endl;
 		locations_enemy_seen.push_back(Point2D(unit->pos));
-		
+		locations_enemy_seen2.push(Point2D(unit->pos));
+
 		// find to what base this location is closest to
 		closestToBase(Point2D(unit->pos));
 	}
@@ -192,4 +205,27 @@ Point2D OrionBot::FindEnemyBase() {
 	auto position = std::distance(enemyBaseValue.begin(), std::max_element(enemyBaseValue.begin(), enemyBaseValue.end()));
 	Point2D point = possible_enemy_bases[position];
 	return point;
+}
+
+void OrionBot::attack() {
+	// Send all units to fight
+	std::cout << "attack" << std::endl;
+	const ObservationInterface* observation = Observation();
+	Units bases = observation->GetUnits();
+
+	if (locations_enemy_seen2.empty()) {
+		std::cout << "stuck" << std::endl;
+		for (int i = 0; i < expansion_locations.size(); ++i) {
+			locations_enemy_seen2.push(expansion_locations[i]);
+		}
+	}
+	for (const auto& base : bases) {
+		if (base->unit_type == UNIT_TYPEID::TERRAN_MARINE || base->unit_type == UNIT_TYPEID::TERRAN_SCV) {
+			Actions()->UnitCommand(base, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen2.front());
+		}
+	}
+	if (next) {
+		locations_enemy_seen2.pop();
+	}
+	next = false;
 }

@@ -9,6 +9,7 @@
 #include "sc2api/sc2_unit_filters.h"
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <map>
 
 #include <cstddef>
@@ -35,8 +36,8 @@ private:
 	enum RushStrategy { RUSH_BANSHEE = 0, RUSH_12MARINES, RUSH_6RAX, RUSH_FINAL };
 	//int RUSH_STRATEGY = RUSH_BANSHEE;
 	//int RUSH_STRATEGY = RUSH_6RAX;
-	//int RUSH_STRATEGY = RUSH_12MARINES;
-	int RUSH_STRATEGY = RUSH_FINAL;
+	int RUSH_STRATEGY = RUSH_12MARINES;
+	//int RUSH_STRATEGY = RUSH_FINAL;
 
 	/*  
 	 * FINAL STRATEGY VARIABLES
@@ -135,9 +136,14 @@ private:
 	enum Marines12_Strategy { STAGE1_MARINES = 0, STAGE2_MARINES, STAGE3_MARINES, STAGE4_ATTACK_MARINES };
 
 	std::vector<Point2D> locations_enemy_seen;
+	std::queue<Point2D> locations_enemy_seen2;
 
 	std::vector<Point2D> possible_enemy_bases;
+	std::vector<Point3D>expansion_locations;
 	std::vector<int> enemyBaseValue;
+
+	bool found_locations = false;
+	bool next = false;
 
 	Point2D base_location;
 
