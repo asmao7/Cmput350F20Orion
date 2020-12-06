@@ -3,8 +3,9 @@
 void OrionBot::CombinedBuild() {
 	switch (FINALSTRATEGY_STATE.current_build) {
 	case STAGE1_FINALSTRATEGY: {
+		OrionBot::scout();
+
 		// 10 - Supply Depot
-		//OrionBot::scout();
 		OrionBot::TryBuildSupplyDepot();
 		// 12 - Refinery
 		OrionBot::BuildRefinery();
@@ -233,7 +234,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			}
 			TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, Point2D(Observation()->GetStartLocation().x, Observation()->GetStartLocation().y));
 		}
-
+		/*
 		if (FINALSTRATEGY_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
 			// send csv to one of the corners and save base location to possible_enemy_bases
 			Point2D location = game_info.enemy_start_locations[FINALSTRATEGY_STATE.num_units_scouting];
@@ -243,7 +244,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			enemyBaseValue.push_back(0);
 			FINALSTRATEGY_STATE.num_units_scouting++;
 		}
-		else {
+		else {*/
 			const Unit* mineral_target = FindNearestMineralPatch(unit->pos);
 			if (AddWorkersToRefineries(unit)) {
 				break;
@@ -252,7 +253,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 				break;
 			}
 			Actions()->UnitCommand(unit, ABILITY_ID::SMART, mineral_target);
-		}
+		//}
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_BARRACKS: {
