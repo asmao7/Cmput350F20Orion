@@ -54,6 +54,8 @@ private:
 		bool morph_reactor;
 		int current_build;
 		int num_units_scouting;
+		bool newCommandCentre = false;
+		bool expand = false;
 	};
 	FinalStrategy FINALSTRATEGY_STATE;
 	enum Final_Strategy { STAGE1_FINALSTRATEGY = 0, STAGE2_FINALSTRATEGY, STAGE3_FINALSTRATEGY, STAGE4_FINALSTRATEGY, STAGE5_FINALSTRATEGY};

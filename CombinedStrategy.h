@@ -23,6 +23,7 @@ void OrionBot::CombinedBuild() {
 				OrionBot::TryBuildFactory();
 			}
 		}
+		
 		// Increment the build counter.
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REFINERY) > 0) {
 			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) > 0) {
@@ -36,6 +37,7 @@ void OrionBot::CombinedBuild() {
 			20 - Starport + Hellion(1 only)
 			@100 % Hellion(1) - Tech Lab(1) > Banshees(to 2)
 			23 - Refinery(2) + Supply Depot*/
+		
 		FINALSTRATEGY_STATE.orbital_upgrade = false;
 		//16 - Supply Depot
 		OrionBot::TryBuildSupplyDepot();
@@ -70,9 +72,9 @@ void OrionBot::CombinedBuild() {
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
 
-		/*if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
 			OrionBot::TryBuildFactory();
-		}*/
+		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
 			OrionBot::TryBuildCommandCentre();
 		}
@@ -101,9 +103,6 @@ void OrionBot::CombinedBuild() {
 		std::cout << STAGE3_FINALSTRATEGY << std::endl;
 		OrionBot::TryBuildSupplyDepot();
 		FINALSTRATEGY_STATE.morph_reactor = true;
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 1 || OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 1) {
-			FINALSTRATEGY_STATE.current_build = STAGE2_BANSHEE;
-		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) >= 0) {
 			FINALSTRATEGY_STATE.morph_techlab = true;
 		}
@@ -116,15 +115,13 @@ void OrionBot::CombinedBuild() {
 		else {
 			FINALSTRATEGY_STATE.produce_banshee = false;
 		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKSREACTOR) > 0) {
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 1) {
-				FINALSTRATEGY_STATE.morph_reactor = false;
-				FINALSTRATEGY_STATE.morph_techlab = false;
-				FINALSTRATEGY_STATE.current_build++;
-			}
-			else {
-				OrionBot::TryBuildFactory();
-			}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORYTECHLAB) >= 1) {
+			FINALSTRATEGY_STATE.morph_reactor = false;
+			FINALSTRATEGY_STATE.morph_techlab = false;
+			FINALSTRATEGY_STATE.current_build++;
+		}
+		else {
+			OrionBot::TryBuildFactory();
 		}
 		break;
 	}
@@ -141,17 +138,21 @@ void OrionBot::CombinedBuild() {
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
 
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
-			OrionBot::TryBuildCommandCentre();
-		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 3) {
 			FINALSTRATEGY_STATE.produce_banshee = true;
 		}
 		else {
 			FINALSTRATEGY_STATE.produce_banshee = false;
 		}
+		
+		// new 
+		FINALSTRATEGY_STATE.expand = true;
+		// try expand at the expansion point
+		if (FINALSTRATEGY_STATE.newCommandCentre == false) {
+			TryBuildCommandCentreExpansion(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
+		}
 
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 6) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 5) {
 			FINALSTRATEGY_STATE.current_build++;
 		}
 		break;
@@ -178,9 +179,6 @@ void OrionBot::CombinedBuild() {
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MISSILETURRET) < 2) {
 			OrionBot::TryBuildMissleTurret();
-		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) < 1) {
-			OrionBot::TryBuildCommandCentre();
 		}
 		break;
 	}
@@ -218,11 +216,23 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_SUPPLYDEPOT: {
-		Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SUPPLYDEPOT_LOWER);
+		if (FINALSTRATEGY_STATE.current_build >= STAGE4_BANSHEE) {
+			Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SUPPLYDEPOT_LOWER);
+		}
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_SCV: {
 		const GameInfo& game_info = Observation()->GetGameInfo();
+
+		if (FINALSTRATEGY_STATE.expand) {
+			Point2D enemyPos = FindEnemyBase();
+			for (int i = 0; i < 3; i++) {
+				if ((possible_enemy_bases[i]) != enemyPos) {
+					TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, possible_enemy_bases[i]);
+				}
+			}
+			TryBuildStructureAtCP(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV, Point2D(Observation()->GetStartLocation().x, Observation()->GetStartLocation().y));
+		}
 
 		if (FINALSTRATEGY_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
 			// send csv to one of the corners and save base location to possible_enemy_bases
