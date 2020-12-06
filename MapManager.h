@@ -8,9 +8,10 @@ void OrionBot::FindMap() {
 	Maps map;
 	if (strcmp(map_name, "Cactus Valley LE (Void)") == 0) {
 		map = Maps::CactusValleyLE;
+		FINALSTRATEGY_STATE.toExpand = true;
 		std::cout << "map is: Cactus" << std::endl;
 	}
-	else if (strcmp(map_name, "BelShir Vestige LE (Void)") == 0) {
+	else if (strcmp(map_name, "Bel'Shir Vestige LE (Void)") == 0) {
 		map = Maps::BelShirVestigeLE;
 		std::cout << "map is: BelShir" << std::endl;
 	}

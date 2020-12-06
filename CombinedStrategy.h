@@ -146,7 +146,9 @@ void OrionBot::CombinedBuild() {
 		}
 		
 		// new 
-		FINALSTRATEGY_STATE.expand = true;
+		if (FINALSTRATEGY_STATE.toExpand == true) {
+			FINALSTRATEGY_STATE.expand = true;
+		}
 		// try expand at the expansion point
 		if (FINALSTRATEGY_STATE.newCommandCentre == false) {
 			TryBuildCommandCentreExpansion(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
