@@ -307,7 +307,12 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		else {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+			if (FINALSTRATEGY_STATE.expand) {
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
+			}
+			else {
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+			}
 		}
 		break;
 	}
@@ -317,7 +322,12 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		else {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+			if (FINALSTRATEGY_STATE.expand) {
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
+			}
+			else {
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+			}
 		}
 		break;
 	}
@@ -327,7 +337,12 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		else {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+			if (FINALSTRATEGY_STATE.expand) {
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
+			}
+			else {
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+			}
 		}
 		break;
 	}
@@ -337,10 +352,20 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_THOR: {
-		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+		if (FINALSTRATEGY_STATE.expand) {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
+		}
+		else {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+		}
 	}
 	case UNIT_TYPEID::TERRAN_RAVEN: {
-		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+		if (FINALSTRATEGY_STATE.expand) {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
+		}
+		else {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+		}
 	}
 	case UNIT_TYPEID::TERRAN_SIEGETANK: {
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
