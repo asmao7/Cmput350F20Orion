@@ -19,6 +19,7 @@ bool TryBuildEngineeringBay();
 bool TryBuildGhostAcademy();
 bool FillRefineries();
 bool TryBuildMissleTurret();
+bool TryBuildArmory();
 
 bool TryBuildCommandCentre();
 const Unit* scouts = NULL;

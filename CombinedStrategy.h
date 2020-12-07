@@ -92,9 +92,7 @@ void OrionBot::CombinedBuild() {
 				}
 			}
 			else {
-				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_STARPORT) < 2) {
-					OrionBot::TryBuildStarport();
-				}
+				OrionBot::TryBuildStarport();
 			}
 		}
 		break;
@@ -140,7 +138,6 @@ void OrionBot::CombinedBuild() {
 		//39 Siege Tanks
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
-
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 3) {
 			FINALSTRATEGY_STATE.produce_banshee = true;
 		}
@@ -156,9 +153,12 @@ void OrionBot::CombinedBuild() {
 		if (FINALSTRATEGY_STATE.newCommandCentre == false) {
 			TryBuildCommandCentreExpansion(ABILITY_ID::BUILD_COMMANDCENTER, UNIT_TYPEID::TERRAN_SCV);
 		}
+		OrionBot::BuildRefinery();
 		OrionBot::TryBuildSupplyDepot();
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 4) {
-			FINALSTRATEGY_STATE.current_build++;
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANK) + OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_SIEGETANKSIEGED) > 6) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MARINE) > 15) {
+				FINALSTRATEGY_STATE.current_build++;
+			}
 		}
 		break;
 	}
@@ -176,6 +176,9 @@ void OrionBot::CombinedBuild() {
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 3) {
 			OrionBot::TryBuildFactory();
+		}
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 2) {
+			OrionBot::TryBuildStarport();
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BANSHEE) < 3) {
 			FINALSTRATEGY_STATE.produce_banshee = true;
@@ -237,10 +240,12 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		}
 		break;
 	}
-	/*case UNIT_TYPEID::TERRAN_SUPPLYDEPOT: {
-		Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SUPPLYDEPOT_LOWER);
+	case UNIT_TYPEID::TERRAN_SUPPLYDEPOT: {
+		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
+			Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SUPPLYDEPOT_LOWER);
+		}
 		break;
-	}*/
+	}
 	case UNIT_TYPEID::TERRAN_SCV: {
 		const GameInfo& game_info = Observation()->GetGameInfo();
 
@@ -282,6 +287,11 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);
 		}
+		if (FINALSTRATEGY_STATE.current_build >= STAGE5_BANSHEE) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_REAPER) < 2) {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_REAPER);
+			}
+		}
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_FACTORY: {
@@ -296,8 +306,10 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			if (FINALSTRATEGY_STATE.current_build >= STAGE4_BANSHEE) {
 				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SIEGETANK);
 			}
-			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_THOR) < 1) {
-				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_THOR);
+			if (FINALSTRATEGY_STATE.current_build >= STAGE5_BANSHEE) {
+				if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_HELLION) < 2) {
+					Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_HELLION);
+				}
 			}
 			Actions()->UnitCommand(unit, ABILITY_ID::BUILD_TECHLAB_FACTORY);
 		}
@@ -314,10 +326,24 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		if (FINALSTRATEGY_STATE.produce_banshee) {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_BANSHEE);
 		}
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_RAVEN) < 1) {
-			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_RAVEN);
+		if (FINALSTRATEGY_STATE.current_build >= STAGE5_BANSHEE) {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_RAVEN) < 1) {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_RAVEN);
+			}
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MEDIVAC) < 5) {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MEDIVAC);
+			}
 		}
+		else {
+			if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MEDIVAC) < 2) {
+				Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MEDIVAC);
+			}
+		}
+		Actions()->UnitCommand(unit, ABILITY_ID::BUILD_TECHLAB_STARPORT);
 		break;
+	}
+	case UNIT_TYPEID::TERRAN_MISSILETURRET: {
+		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK);
 	}
 	case UNIT_TYPEID::TERRAN_MARINE: {
 		//const GameInfo& game_info = Observation()->GetGameInfo();
@@ -341,21 +367,11 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_HELLION: {
-		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
-			//next = true;
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, current_location);
-			Point2D pos = unit->pos;
-			if (pos == current_location) {
-				next = true;
-			}
+		if (FINALSTRATEGY_STATE.toExpand) {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
 		}
 		else {
-			if (FINALSTRATEGY_STATE.toExpand) {
-				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
-			}
-			else {
-				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
-			}
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
 		}
 		break;
 	}
@@ -379,8 +395,12 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_REAPER: {
-		const GameInfo& game_info = Observation()->GetGameInfo();
-		Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, game_info.enemy_start_locations.front());
+		if (FINALSTRATEGY_STATE.toExpand) {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
+		}
+		else {
+			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+		}
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_THOR: {
@@ -390,20 +410,26 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
 		}
+		break;
 	}
 	case UNIT_TYPEID::TERRAN_RAVEN: {
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
-			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, enemy_units.front()->pos);
 			//next = true;
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, current_location);
+			Actions()->UnitCommand(unit, ABILITY_ID::GENERAL_PATROL, current_location);
 			Point2D pos = unit->pos;
 			if (pos == current_location) {
 				next = true;
 			}
 		}
 		else {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
+			if (FINALSTRATEGY_STATE.toExpand) {
+				Actions()->UnitCommand(unit, ABILITY_ID::GENERAL_PATROL, FINALSTRATEGY_STATE.wait_location);
+			}
+			else {
+				Actions()->UnitCommand(unit, ABILITY_ID::GENERAL_PATROL, Observation()->GetStartLocation());
+			}
 		}
+		break;
 	}
 	case UNIT_TYPEID::TERRAN_SIEGETANK: {
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
@@ -416,7 +442,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 					distance = d;
 				}
 			}
-			if (distance < 11) {
+			if (distance < 12) {
 				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, Observation()->GetStartLocation());
 				Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SIEGEMODE);
 			}
@@ -460,6 +486,21 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		}
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::MORPH_UNSIEGE);
+		}
+		break;
+	}
+	case UNIT_TYPEID::TERRAN_MEDIVAC: {
+		Units bio_units = Observation()->GetUnits(Unit::Self, IsUnits(bio_types));
+		if (unit->orders.empty()) {
+			for (const auto& bio_unit : bio_units) {
+				if (bio_unit->health < bio_unit->health_max) {
+					Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_HEAL, bio_unit);
+					break;
+				}
+			}
+			if (!bio_units.empty()) {
+				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, bio_units.front());
+			}
 		}
 		break;
 	}

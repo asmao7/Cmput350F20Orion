@@ -83,6 +83,11 @@ bool OrionBot::TryBuildMissleTurret() {
 bool OrionBot::TryBuildGhostAcademy() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_GHOSTACADEMY);
 }
+//Try to build ghost academy
+//Made by: Joe
+bool OrionBot::TryBuildArmory() {
+    return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_ARMORY);
+}
 
 
 // Made by Ana

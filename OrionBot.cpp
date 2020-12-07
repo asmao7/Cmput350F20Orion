@@ -108,7 +108,7 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
     }
     float rx = GetRandomScalar();
     float ry = GetRandomScalar();
-    Point2D build_location = Point2D(bases.front()->pos.x + rx * 15, bases.front()->pos.y + ry * 15);
+    Point2D build_location = Point2D(bases.front()->pos.x + rx * 14.75, bases.front()->pos.y + ry * 14.75);
 
     Units units = observation->GetUnits(Unit::Alliance::Self);
     float distance = std::numeric_limits<float>::max();
@@ -148,6 +148,16 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
 
     // If no worker is already building one, get a random worker to build one
     const Unit* unit = GetRandomEntry(workers);
+    if (FINALSTRATEGY_STATE.current_build < STAGE2_FINALSTRATEGY) {
+        for (const auto& order : unit->orders) {
+            if (order.ability_id == ability_type_for_structure) {
+                return false;
+            }
+            if (order.ability_id == ABILITY_ID::MOVE_MOVE) {
+                return false;
+            }
+        }
+    }
 
     // Check to see if unit can make it there
     if (Query()->PathingDistance(unit, build_location) < 0.1f) {
