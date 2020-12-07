@@ -207,6 +207,12 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			if (!mineral_target) {
 				break;
 			}
+			else {
+				// If we are not supply capped, don't build a supply depot.
+				if (Observation()->GetFoodUsed() >= Observation()->GetFoodCap() - 6) {
+					OrionBot::tryCalldownExtraSupplies(unit);
+				}
+			}
 			Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_CALLDOWNMULE, mineral_target);
 		}
 		else {
