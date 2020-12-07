@@ -3,7 +3,6 @@
 //Taken from Blizzard Sc2 Example Library
 //Builds a structure at given location.
 //Takes in a point.
-//Made by: Joe
 bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, Tag location_tag, UNIT_TYPEID unit_type = UNIT_TYPEID::TERRAN_SCV) {
     const ObservationInterface* observation = Observation();
     Units workers = observation->GetUnits(Unit::Alliance::Self, IsUnit(unit_type));
@@ -36,7 +35,6 @@ bool OrionBot::TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, 
 //Find nearest vespene geyser to the scv.
 //Adapted from find nearest minerals function.
 //Takes in a point.
-//Made by: Joe
 const bool OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
     Units geysers = Observation()->GetUnits(Unit::Alliance::Neutral, IsGeyser());
     float distance = std::numeric_limits<float>::max();
@@ -58,34 +56,28 @@ const bool OrionBot::FindNearestVespeneGeyser(const Point2D& start) {
 }
 
 //Try to build factory
-//Made by: Joe
 bool OrionBot::TryBuildFactory() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_FACTORY);
 }
 
 //Try to build starport
-//Made by: Joe
 bool OrionBot::TryBuildStarport() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_STARPORT);
 }
 //Try to build engineering bay
-//Made by: Joe
 bool OrionBot::TryBuildEngineeringBay() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_ENGINEERINGBAY);
 }
 //Try to build engineering bay
-//Made by: Joe
 bool OrionBot::TryBuildMissleTurret() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_MISSILETURRET);
 }
 //Try to build ghost academy
-//Made by: Joe
 bool OrionBot::TryBuildGhostAcademy() {
     return OrionBot::TryBuildStructure(ABILITY_ID::BUILD_GHOSTACADEMY);
 }
 
 
-// Made by Ana
 void OrionBot::TryBuildOrbitalCommand() {
     const ObservationInterface* observation = Observation();
     Units bases = observation->GetUnits(Unit::Self, IsTownHall());
@@ -101,7 +93,6 @@ void OrionBot::TryBuildOrbitalCommand() {
 
 //Add SCVs to refineries.
 //Reason is so that refineries are at max efficiency (3 SCVs)
-//Made by: Joe
 bool OrionBot::AddWorkersToRefineries(const Unit* unit) {
     const ObservationInterface* observation = Observation();
     Units geysers = observation->GetUnits(Unit::Alliance::Self, IsVisibleGeyser());
@@ -143,7 +134,6 @@ bool OrionBot::FillRefineries() {
 
 /*
  * Fix!
- * ~Asma
 */
 bool OrionBot::TryBuildMarine() {
     //return TryBuildUnit(ABILITY_ID::TRAIN_MARINE, UNIT_TYPEID::TERRAN_BARRACKS);
@@ -176,7 +166,6 @@ bool OrionBot::TryBuildMarine() {
 
 /*
  * TODO!
- * ~Asma
 */
 bool OrionBot::TryBuildCommandCentre() {
     const ObservationInterface* observation = Observation();
@@ -188,10 +177,8 @@ bool OrionBot::TryBuildCommandCentre() {
 
 
 /*
- * ~ in progress!
  * Attacking only if enemy
  * is in close proximity,
- * ~Asma
 */
 void OrionBot::TryAttacking() {
     const ObservationInterface* observation = Observation();
@@ -219,7 +206,6 @@ void OrionBot::TryAttacking() {
 /*
  * in progress!
  * if SVCs > 10  then scout
- * ~Asma
 */
 void OrionBot::TryScouting() {
     const ObservationInterface* observation = Observation();
@@ -234,7 +220,6 @@ void OrionBot::TryScouting() {
 /*
  * Utility function for scouting
  * Find any enemy structures
- * ~Asma
 */
 bool OrionBot::FindEnemyStructure(const ObservationInterface* observation, const Unit*& enemy_unit) {
     Units my_units = observation->GetUnits(Unit::Alliance::Enemy);
@@ -251,7 +236,6 @@ bool OrionBot::FindEnemyStructure(const ObservationInterface* observation, const
 
 /*
  * Tries to find a random location that can be pathed to on the map.
- * ~Asma
 */
 bool OrionBot::FindEnemyPosition(Point2D& target_pos) {
     const GameInfo& game_info = Observation()->GetGameInfo();
