@@ -171,7 +171,7 @@ void OrionBot::CombinedBuild() {
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
 
-		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 4) {
+		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) < 3) {
 			OrionBot::TryBuildBarracks();
 		}
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_FACTORY) < 3) {
