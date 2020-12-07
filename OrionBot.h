@@ -59,6 +59,7 @@ private:
 		bool newCommandCentre = false;
 		bool expand = false;
 		bool toExpand = false;
+		bool BVMap = false;
 		Point2D wait_location;
 
 		Point2D BOTTOM_LEFT_WAIT_POINT = Point2D(30, 66.1);
