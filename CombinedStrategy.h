@@ -145,7 +145,6 @@ void OrionBot::CombinedBuild() {
 			FINALSTRATEGY_STATE.produce_banshee = false;
 		}
 		
-		// new 
 		if (FINALSTRATEGY_STATE.toExpand == true) {
 			FINALSTRATEGY_STATE.expand = true;
 		}
@@ -160,9 +159,7 @@ void OrionBot::CombinedBuild() {
 		break;
 	}
 	case STAGE5_FINALSTRATEGY: {
-		//BANSHEE_STATE.morph_techlab = true;
 		OrionBot::final_attack();
-		//OrionBot::TryBuildCommandCentre();
 		OrionBot::TryBuildSupplyDepot();
 		OrionBot::BuildRefinery();
 		OrionBot::FillRefineries();
@@ -195,7 +192,6 @@ void OrionBot::CombinedBuild() {
 }
 
 void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
-	//Units enemy_units = Observation()->GetUnits(Unit::Alliance::Enemy);
 	switch (unit->unit_type.ToType()) {
 	case UNIT_TYPEID::TERRAN_COMMANDCENTER: {
 		if (FINALSTRATEGY_STATE.orbital_upgrade) {
@@ -213,12 +209,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 				break;
 			}
 			Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_CALLDOWNMULE, mineral_target);
-			/*if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
-				Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_CALLDOWNMULE, mineral_target);
-			}
-			else {
-				OrionBot::tryCalldownExtraSupplies(unit);
-			}	*/
 		}
 		else {
 			if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
@@ -233,10 +223,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		}
 		break;
 	}
-	/*case UNIT_TYPEID::TERRAN_SUPPLYDEPOT: {
-		Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SUPPLYDEPOT_LOWER);
-		break;
-	}*/
 	case UNIT_TYPEID::TERRAN_SCV: {
 		const GameInfo& game_info = Observation()->GetGameInfo();
 
@@ -316,10 +302,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_MARINE: {
-		//const GameInfo& game_info = Observation()->GetGameInfo();
-		//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, game_info.enemy_start_locations.front());
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
-			//next = true;
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, current_location);
 			Point2D pos = unit->pos;
 			if (pos == current_location) {
@@ -338,7 +321,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 	}
 	case UNIT_TYPEID::TERRAN_HELLION: {
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
-			//next = true;
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, current_location);
 			Point2D pos = unit->pos;
 			if (pos == current_location) {
@@ -357,7 +339,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 	}
 	case UNIT_TYPEID::TERRAN_BANSHEE: {
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
-			//next = true;
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, current_location);
 			Point2D pos = unit->pos;
 			if (pos == current_location) {
@@ -389,8 +370,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 	}
 	case UNIT_TYPEID::TERRAN_RAVEN: {
 		if (FINALSTRATEGY_STATE.current_build >= STAGE5_FINALSTRATEGY) {
-			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, enemy_units.front()->pos);
-			//next = true;
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, current_location);
 			Point2D pos = unit->pos;
 			if (pos == current_location) {
@@ -417,7 +396,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 				Actions()->UnitCommand(unit, ABILITY_ID::MORPH_SIEGEMODE);
 			}
 			else {
-				//next = true;
 				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, current_location);
 				Point2D pos = unit->pos;
 				if (pos == current_location) {
@@ -446,7 +424,6 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 				Actions()->UnitCommand(unit, ABILITY_ID::MORPH_UNSIEGE);
 			}
 			else {
-				//next = true;
 				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, current_location);
 				Point2D pos = unit->pos;
 				if (pos == current_location) {
@@ -481,31 +458,17 @@ void OrionBot::final_attack() {
 	Units bases = observation->GetUnits();
 
 	if (locations_enemy_seen2.empty()) {
-		//wait = true;
 		for (int i = 0; i < expansion_locations.size(); ++i) {
 			locations_enemy_seen2.push(expansion_locations[i]);
 		}
-		//wait = false;
 	}
 	current_location = locations_enemy_seen2.front();
-	/*for (const auto& base : bases) {
-		if (base->unit_type == UNIT_TYPEID::TERRAN_MARINE 
-			|| base->unit_type == UNIT_TYPEID::TERRAN_SIEGETANKSIEGED
-			|| base->unit_type == UNIT_TYPEID::TERRAN_SIEGETANK
-			|| base->unit_type == UNIT_TYPEID::TERRAN_RAVEN
-			|| base->unit_type == UNIT_TYPEID::TERRAN_BANSHEE
-			|| base->unit_type == UNIT_TYPEID::TERRAN_HELLION) {
-
-			Actions()->UnitCommand(base, ABILITY_ID::ATTACK, current_location);
-		}
-	}*/
 	if (next) {
 		if (!locations_enemy_seen2.empty()) {
 			locations_enemy_seen2.pop();
 			next = false;
 		}
 	}
-	//next = false;
 }
 
 void OrionBot::FinalScout() {
