@@ -251,14 +251,6 @@ bool OrionBot::TryBuildStructureAtCP(ABILITY_ID ability_type_for_structure, UNIT
 			ability_type_for_structure,
 			Point2D(toBuildPos.x, toBuildPos.y));
 	}
-	/*
-	else {
-		float rx = GetRandomScalar();
-		float ry = GetRandomScalar();
-		Actions()->UnitCommand(unit_to_build,
-			ability_type_for_structure,
-			Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
-	}*/
 	return true;
 }
 
