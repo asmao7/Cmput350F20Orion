@@ -53,42 +53,47 @@ size_t OrionBot::CountUnitType(UNIT_TYPEID unit_type) {
 }
 
 // From Sc2 Cpp Tutorial
-//bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
-//    const ObservationInterface* observation = Observation();
-//
-//    // If a unit already is building a supply structure of this type, do nothing.
-//    // Also get an scv to build the structure.
-//    const Unit* unit_to_build = nullptr;
-//    Units units = observation->GetUnits(Unit::Alliance::Self);
-//    //Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
-//    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
-//
-//    for (const auto& unit : units) {
-//        for (const auto& order : unit->orders) {
-//            if (order.ability_id == ability_type_for_structure) {
-//                return false;
-//            }
-//        }
-//
-//        if (unit->unit_type == unit_type) {
-//            unit_to_build = unit;
-//        }
-//    }
-//
-//    float rx = GetRandomScalar();
-//    float ry = GetRandomScalar();
-//    if (!bases.empty()) {
-//        Actions()->UnitCommand(unit_to_build,
-//            ability_type_for_structure,
-//            Point2D(bases.front()->pos.x + rx * 15.0f, bases.front()->pos.y + ry * 15.0f));
-//    }
-//    else {
-//        Actions()->UnitCommand(unit_to_build,
-//            ability_type_for_structure,
-//            Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
-//    }
-//    return true;
-//}
+bool OrionBot::TryBuildStructureRandom(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
+    const ObservationInterface* observation = Observation();
+
+    // If a unit already is building a supply structure of this type, do nothing.
+    // Also get an scv to build the structure.
+    const Unit* unit_to_build = nullptr;
+    Units units = observation->GetUnits(Unit::Alliance::Self);
+    //Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+    Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
+
+    for (const auto& unit : units) {
+        for (const auto& order : unit->orders) {
+            if (order.ability_id == ability_type_for_structure) {
+                return false;
+            }
+            if (FINALSTRATEGY_STATE.current_build < STAGE2_FINALSTRATEGY) {
+                if (order.ability_id == ABILITY_ID::MOVE_MOVE) {
+                    return false;
+                }
+            }
+        }
+
+        if (unit->unit_type == unit_type) {
+            unit_to_build = unit;
+        }
+    }
+
+    float rx = GetRandomScalar();
+    float ry = GetRandomScalar();
+    if (!bases.empty()) {
+        Actions()->UnitCommand(unit_to_build,
+            ability_type_for_structure,
+            Point2D(bases.front()->pos.x + rx * 15.0f, bases.front()->pos.y + ry * 15.0f));
+    }
+    else {
+        Actions()->UnitCommand(unit_to_build,
+            ability_type_for_structure,
+            Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
+    }
+    return true;
+}
 
 
 
@@ -103,7 +108,7 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
     }
     float rx = GetRandomScalar();
     float ry = GetRandomScalar();
-    Point2D build_location = Point2D(bases.front()->pos.x + rx * 14, bases.front()->pos.y + ry * 14);
+    Point2D build_location = Point2D(bases.front()->pos.x + rx * 15, bases.front()->pos.y + ry * 15);
 
     Units units = observation->GetUnits(Unit::Alliance::Self);
     float distance = std::numeric_limits<float>::max();
@@ -116,7 +121,7 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
             distance = d;
         }
     }
-    if (distance < 6) {
+    if (distance < 5.75) {
         return false;
     }
 
@@ -132,6 +137,11 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
         for (const auto& order : worker->orders) {
             if (order.ability_id == ability_type_for_structure) {
                 return false;
+            }
+            if (FINALSTRATEGY_STATE.current_build < STAGE2_FINALSTRATEGY) {
+                if (order.ability_id == ABILITY_ID::MOVE_MOVE) {
+                    return false;
+                }
             }
         }
     }
@@ -160,11 +170,12 @@ bool OrionBot::TryBuildSupplyDepot() {
 
    
     // If we are not supply capped, don't build a supply depot.
-    if (observation->GetFoodUsed() <= observation->GetFoodCap() - 2)
+    if (observation->GetFoodUsed() < observation->GetFoodCap() - 6) {
         return false;
+    }
 
     // Try and build a depot. Find a random SCV and give it the order.
-    return TryBuildStructure(ABILITY_ID::BUILD_SUPPLYDEPOT);
+    return TryBuildStructureRandom(ABILITY_ID::BUILD_SUPPLYDEPOT);
 }
 
 // From Sc2 Cpp Tutorial

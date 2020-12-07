@@ -29,7 +29,7 @@ private:
 	bool TryBuildSupplyDepot();
 	bool TryBuildBarracks();
 	//ADDED
-	//bool OrionBot::TryBuildStructureTest(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type);
+	bool TryBuildStructureRandom(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type = UNIT_TYPEID::TERRAN_SCV);
 
 	//Global State Tracker
 	//Lets us know what strategy we are playing
@@ -45,7 +45,7 @@ private:
 	struct FinalStrategy {
 		FinalStrategy() :
 			orbital_upgrade(false), produce_hellion(false), produce_banshee(false),
-			morph_techlab(false), morph_reactor(false), current_build(0), num_units_scouting(0)
+			morph_techlab(false), morph_reactor(false), current_build(0), num_units_scouting(0), scouting(true)
 		{
 		}
 		bool orbital_upgrade;
@@ -53,6 +53,7 @@ private:
 		bool produce_banshee;
 		bool morph_techlab;
 		bool morph_reactor;
+		bool scouting;
 		int current_build;
 		int num_units_scouting;
 		bool newCommandCentre = false;
