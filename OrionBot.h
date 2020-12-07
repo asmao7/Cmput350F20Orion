@@ -58,6 +58,7 @@ private:
 		bool newCommandCentre = false;
 		bool expand = false;
 		bool toExpand = false;
+		Point2D wait_location;
 	};
 	FinalStrategy FINALSTRATEGY_STATE;
 	enum Final_Strategy { STAGE1_FINALSTRATEGY = 0, STAGE2_FINALSTRATEGY, STAGE3_FINALSTRATEGY, STAGE4_FINALSTRATEGY, STAGE5_FINALSTRATEGY};

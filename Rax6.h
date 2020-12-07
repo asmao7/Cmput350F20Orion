@@ -229,6 +229,7 @@ bool OrionBot::TryBuildCommandCentreExpansion(ABILITY_ID ability_type_for_struct
 	}
 
 	Point2D toBuildCC = closest_expansion;
+	FINALSTRATEGY_STATE.wait_location = toBuildCC;
 	float rx = toBuildCC.x;
 	float ry = toBuildCC.y;
 
