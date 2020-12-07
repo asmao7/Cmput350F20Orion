@@ -54,18 +54,7 @@ void OrionBot::Marines12Build() {
 	case STAGE4_ATTACK_MARINES:
 		if (OrionBot::CountUnitType(UNIT_TYPEID::TERRAN_MARINE) >= 15) {
 			MARINES12_STATE.attacking = true;
-
 			attack();
-			/*
-			// Send all units to fight
-			const ObservationInterface* observation = Observation();
-			Units bases = observation->GetUnits();
-
-			for (const auto& base : bases) {
-				if (base->unit_type == UNIT_TYPEID::TERRAN_SCV || base->unit_type == UNIT_TYPEID::TERRAN_MARINE) {
-					Actions()->UnitCommand(base, ABILITY_ID::ATTACK_ATTACK, FindEnemyBase());
-				}
-			}*/
 		}
 		
 	}
@@ -83,12 +72,10 @@ void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_ORBITALCOMMAND: {	
-		//std::cout << "here";
 		if (unit->energy < 50) {
 			break;
 		}
 
-		//std::cout << "AAAA";
 		if (!MARINES12_STATE.supplies_called) {
 			tryCalldownExtraSupplies(unit);
 			break;
@@ -115,11 +102,6 @@ void OrionBot::Marines12OnUnitIdle(const Unit* unit) {
 		if (MARINES12_STATE.attacking) {
 			next = true;
 		}
-		/*
-		if (MARINES12_STATE.attacking && MARINES12_STATE.i_location < locations_enemy_seen.size()) {
-			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen[MARINES12_STATE.i_location]);
-			MARINES12_STATE.i_location++;
-		}*/
 	}
 	case UNIT_TYPEID::TERRAN_BARRACKS: {
 		Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_MARINE);
@@ -177,7 +159,6 @@ void OrionBot::tryCalldownExtraSupplies(const Unit* unit) {
 
 void OrionBot::OnUnitEnterVision(const Unit* unit) {
 	if (unit->alliance == Unit::Alliance::Enemy) {
-		//std::cout << "See enemy" << std::endl;
 		locations_enemy_seen.push_back(Point2D(unit->pos));
 		locations_enemy_seen2.push(Point2D(unit->pos));
 

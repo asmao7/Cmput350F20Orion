@@ -1,6 +1,5 @@
 #include "OrionBot.h"
 //Rax6 Rush Strategy
-//Made by: Asma.
 
 /*
 	STAGE1
@@ -9,7 +8,7 @@
 	13 - Barracks @ choke point	~ DONE!
 	16 - Orbital Command ~DONE!
 	STAGE2
-	- Base expansion ~ SOMETIMES DOESN'T WORK - need to fix!
+	- Base expansion ~DONE!
 	STAGE3
 	- Perform a scan sweep on the corners until   ~ done but need to find a way to notify the bot about the scan
 	  the enemy base is found
@@ -24,8 +23,6 @@ void OrionBot::Rax6Build() {
 	switch (RAX6_STATE.currentBuild) {
 	case STAGE1_RAX6:
 		OrionBot::setChokePoints();
-
-		//while (!(RAX6_STATE.enemy_found)) {
 		OrionBot::scout();
 		
 		if (Observation()->GetMinerals() >= 100) {
@@ -51,8 +48,6 @@ void OrionBot::Rax6Build() {
 		}
 
 		if (CountUnitType(UNIT_TYPEID::TERRAN_ORBITALCOMMAND) > 0) {
-			//RAX6_STATE.upgradeOrbital = true;
-			//RAX6_STATE.newCommandCentre = true;
 			RAX6_STATE.currentBuild++;
 		}
 		break;
@@ -70,8 +65,6 @@ void OrionBot::Rax6Build() {
 	case STAGE3_RAX6:
 		TryBuildBarracks();
 		TryBuildSupplyDepot();
-		//TryBuildBarracks();
-		//TryBuildMarine();
 		if (CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) == 4) {
 			RAX6_STATE.currentBuild++;
 		}
@@ -82,7 +75,6 @@ void OrionBot::Rax6Build() {
 		TryBuildSupplyDepot();
 		TryBuildBarracks();
 		TryBuildBarracks();
-		//TryBuildMarine();
 		if (CountUnitType(UNIT_TYPEID::TERRAN_BARRACKS) == 6) {
 			RAX6_STATE.currentBuild++;
 		}
@@ -116,7 +108,6 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 				break;
 			}
 			Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_CALLDOWNMULE, mineral_target);
-			//Actions()->UnitCommand(unit, ABILITY_ID::EFFECT_SCAN, Point2D(158.5, 33.5));
 		}
 		else {
 			Actions()->UnitCommand(unit, ABILITY_ID::TRAIN_SCV);
@@ -125,15 +116,6 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 	}
 	case UNIT_TYPEID::TERRAN_SCV: {
 		const GameInfo& game_info = Observation()->GetGameInfo();
-		/*
-		if (RAX6_STATE.num_units_scouting < game_info.enemy_start_locations.size()) {
-			// send csv to one of the corners and save base location to possible_enemy_bases
-			Point2D location = game_info.enemy_start_locations[RAX6_STATE.num_units_scouting];
-			Actions()->UnitCommand(unit, ABILITY_ID::MOVE_MOVE, location);
-			possible_enemy_bases.push_back(location);
-			enemyBaseValue.push_back(0);
-			RAX6_STATE.num_units_scouting++;
-		}*/
 		if (RAX6_STATE.expand) {
 			Point2D enemyPos = FindEnemyBase();
 			for (int i = 0; i < 3; i++) {
@@ -163,8 +145,6 @@ void OrionBot::Rax6OnUnitIdle(const Unit* unit) {
 		}
 		if (RAX6_STATE.attacking) {
 			const GameInfo& game_info = Observation()->GetGameInfo();
-			// there are 3 enemy_start_locations
-			//Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, locations_enemy_seen.front());
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK_ATTACK, FindEnemyBase());
 		}
 		else {
@@ -312,35 +292,6 @@ void OrionBot::setChokePoints() {
 		RAX6_STATE.barracks = Point2D(160, 148);
 	}
 }
-
-
-// a
-/*
-void OrionBot::OnUnitEnterVision(const Unit* unit) {
-	if (unit->alliance == Unit::Alliance::Enemy) {
-		locations_enemy_seen.push_back(Point2D(unit->pos));
-		// find to what base this location is closest to
-		closestToBase(Point2D(unit->pos));
-	}
-}
-void OrionBot::closestToBase(Point2D coord) {
-	float min_distance = FLT_MAX;
-	int min_i = 0;
-	for (int i = 0; i < possible_enemy_bases.size(); ++i) {
-		auto distance = DistanceSquared2D(coord, possible_enemy_bases[i]);
-		if (distance < min_distance) {
-			min_distance = distance;
-			min_i = i;
-		}
-	}
-	enemyBaseValue[min_i] += 1;
-	return;
-}
-Point2D OrionBot::FindEnemyBase() {
-	auto position = std::distance(enemyBaseValue.begin(), std::max_element(enemyBaseValue.begin(), enemyBaseValue.end()));
-	Point2D point = possible_enemy_bases[position];
-	return point;
-}*/
 
 
 void OrionBot::TryScout() {
