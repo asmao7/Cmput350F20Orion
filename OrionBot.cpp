@@ -99,7 +99,6 @@ bool OrionBot::TryBuildStructureRandom(ABILITY_ID ability_type_for_structure, UN
 
 ////NEW ADDED
 bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
-    //std::cout << "Try build" << std::endl;
     const ObservationInterface* observation = Observation();
     Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
     //if we have no workers Don't build
