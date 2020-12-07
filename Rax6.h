@@ -229,9 +229,10 @@ bool OrionBot::TryBuildCommandCentreExpansion(ABILITY_ID ability_type_for_struct
 	}
 
 	Point2D toBuildCC = closest_expansion;
-	FINALSTRATEGY_STATE.wait_location = toBuildCC;
+	//FINALSTRATEGY_STATE.wait_location = toBuildCC;
 	float rx = toBuildCC.x;
 	float ry = toBuildCC.y;
+	std::cout << "expansion point: " << toBuildCC.x << ", " << toBuildCC.y << std::endl;
 
 	Actions()->UnitCommand(unit_to_build,
 		ability_type_for_structure,

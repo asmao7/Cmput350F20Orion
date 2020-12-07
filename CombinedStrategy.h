@@ -307,7 +307,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		else {
-			if (FINALSTRATEGY_STATE.expand) {
+			if (FINALSTRATEGY_STATE.toExpand) {
 				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
 			}
 			else {
@@ -322,7 +322,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		else {
-			if (FINALSTRATEGY_STATE.expand) {
+			if (FINALSTRATEGY_STATE.toExpand) {
 				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
 			}
 			else {
@@ -337,7 +337,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, OrionBot::FindEnemyBase());
 		}
 		else {
-			if (FINALSTRATEGY_STATE.expand) {
+			if (FINALSTRATEGY_STATE.toExpand) {
 				Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
 			}
 			else {
@@ -352,7 +352,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		break;
 	}
 	case UNIT_TYPEID::TERRAN_THOR: {
-		if (FINALSTRATEGY_STATE.expand) {
+		if (FINALSTRATEGY_STATE.toExpand) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
 		}
 		else {
@@ -360,7 +360,7 @@ void OrionBot::CombinedOnUnitIdle(const Unit* unit) {
 		}
 	}
 	case UNIT_TYPEID::TERRAN_RAVEN: {
-		if (FINALSTRATEGY_STATE.expand) {
+		if (FINALSTRATEGY_STATE.toExpand) {
 			Actions()->UnitCommand(unit, ABILITY_ID::ATTACK, FINALSTRATEGY_STATE.wait_location);
 		}
 		else {

@@ -15,6 +15,19 @@ void OrionBot::FindMap() {
 	if (strcmp(map_name, "Cactus Valley LE (Void)") == 0) {
 		map = Maps::CactusValleyLE;
 		FINALSTRATEGY_STATE.toExpand = true;
+
+		if (Observation()->GetStartLocation().x == 33.5 && Observation()->GetStartLocation().y == 158.5) {
+			FINALSTRATEGY_STATE.wait_location = FINALSTRATEGY_STATE.TOP_LEFT_WAIT_POINT;
+		}
+		else if (Observation()->GetStartLocation().x == 158.5 && Observation()->GetStartLocation().y == 158.5) {
+			FINALSTRATEGY_STATE.wait_location = FINALSTRATEGY_STATE.TOP_RIGHT_WAIT_POINT;
+		}
+		else if (Observation()->GetStartLocation().x == 33.5 && Observation()->GetStartLocation().y == 33.5) {
+			FINALSTRATEGY_STATE.wait_location = FINALSTRATEGY_STATE.BOTTOM_LEFT_WAIT_POINT;
+		}
+		else {
+			FINALSTRATEGY_STATE.wait_location = FINALSTRATEGY_STATE.BOTTOM_RIGHT_WAIT_POINT;
+		}
 		std::cout << "map is: Cactus" << std::endl;
 	}
 	else if (strcmp(map_name, "Bel'Shir Vestige LE (Void)") == 0) {
