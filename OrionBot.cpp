@@ -23,6 +23,10 @@ void OrionBot::OnStep() {
             OrionBot::CombinedBuild();
             break;
         }
+        default: {
+            OrionBot::CombinedBuild();
+            break;
+        }
     }
 }
 
@@ -41,6 +45,10 @@ void OrionBot::OnUnitIdle(const Unit* unit) {
             break;
         }
         case RUSH_FINAL: {
+            OrionBot::CombinedOnUnitIdle(unit);
+            break;
+        }
+        default: {
             OrionBot::CombinedOnUnitIdle(unit);
             break;
         }

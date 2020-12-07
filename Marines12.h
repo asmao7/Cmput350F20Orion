@@ -1,3 +1,4 @@
+#pragma once
 //#include "OrionBot.h"
 // 12 Marines @4:30 Strategy
 // Made by Ana

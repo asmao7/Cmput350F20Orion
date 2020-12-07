@@ -1,3 +1,5 @@
+#pragma once
+
 bool TryBuildStructureTargeted(ABILITY_ID ability_type_for_structure, Tag location_tag, UNIT_TYPEID unit_type);
 
 const bool FindNearestVespeneGeyser(const Point2D& start);
