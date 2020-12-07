@@ -60,7 +60,6 @@ bool OrionBot::TryBuildStructureRandom(ABILITY_ID ability_type_for_structure, UN
     // Also get an scv to build the structure.
     const Unit* unit_to_build = nullptr;
     Units units = observation->GetUnits(Unit::Alliance::Self);
-    //Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
     Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
 
     for (const auto& unit : units) {
@@ -96,8 +95,6 @@ bool OrionBot::TryBuildStructureRandom(ABILITY_ID ability_type_for_structure, UN
 }
 
 
-
-////NEW ADDED
 bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type) {
     const ObservationInterface* observation = Observation();
     Units bases = observation->GetUnits(Unit::Alliance::Self, IsTownHall());
@@ -161,12 +158,9 @@ bool OrionBot::TryBuildStructure(ABILITY_ID ability_type_for_structure, UNIT_TYP
 }
 
 
-
-
 // From Sc2 Cpp Tutorial
 bool OrionBot::TryBuildSupplyDepot() {
     const ObservationInterface* observation = Observation();
-
    
     // If we are not supply capped, don't build a supply depot.
     if (observation->GetFoodUsed() < observation->GetFoodCap() - 6) {
@@ -184,7 +178,6 @@ bool OrionBot::TryBuildBarracks() {
 
     return TryBuildStructure(ABILITY_ID::BUILD_BARRACKS);
 }
-
 
 
 // From Sc2 Cpp Tutorial

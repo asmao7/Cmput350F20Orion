@@ -1,3 +1,4 @@
+#pragma once
 #include "OrionBot.h"
 
 /*
@@ -16,7 +17,6 @@ void OrionBot::FindMap() {
 	const char* map_name = Observation()->GetGameInfo().map_name.c_str();
 	Maps map;
 
-	
 	if (strcmp(map_name, "Cactus Valley LE (Void)") == 0) {
 		map = Maps::CactusValleyLE;
 		FINALSTRATEGY_STATE.toExpand = true;
@@ -37,7 +37,6 @@ void OrionBot::FindMap() {
 	else if (strcmp(map_name, "Bel'Shir Vestige LE (Void)") == 0) {
 		map = Maps::BelShirVestigeLE;
 		FINALSTRATEGY_STATE.BVMap = true;
-		std::cout << "map is: Bel'Shir Vestige LE (Void)" << std::endl;
 
 		const ObservationInterface* observation = Observation();
 		Point3D startLocation_ = Observation()->GetStartLocation();

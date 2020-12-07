@@ -224,7 +224,7 @@ bool OrionBot::TryBuildCommandCentreExpansion(ABILITY_ID ability_type_for_struct
 
 
 /*
- * Takes in positure and builds the specified structure at the specified location
+ * Takes in position and builds the specified structure at the specified location
 */
 bool OrionBot::TryBuildStructureAtCP(ABILITY_ID ability_type_for_structure, UNIT_TYPEID unit_type, Point2D toBuildPos) {
 	const ObservationInterface* observation = Observation();
@@ -251,13 +251,14 @@ bool OrionBot::TryBuildStructureAtCP(ABILITY_ID ability_type_for_structure, UNIT
 			ability_type_for_structure,
 			Point2D(toBuildPos.x, toBuildPos.y));
 	}
+	/*
 	else {
 		float rx = GetRandomScalar();
 		float ry = GetRandomScalar();
 		Actions()->UnitCommand(unit_to_build,
 			ability_type_for_structure,
 			Point2D(unit_to_build->pos.x + rx * 15.0f, unit_to_build->pos.y + ry * 15.0f));
-	}
+	}*/
 	return true;
 }
 
