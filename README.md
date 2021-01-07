@@ -2,7 +2,7 @@
 
 ![](https://github.com/asmao7/Cmput350F20Orion/blob/master/docs/OrionBot.gif)
 
-OrionBot is a SC2 bot for CMPUT 350 at UAlberta.
+OrionBot is a SC2 bot for CMPUT 350 at UAlberta built using a rush strategy approach.
 
 This bot works with our fork of [Sc2LadderServer](https://github.com/solinas/Sc2LadderServer) which will be used to run the tournament at the end of the term. It should help you
 set up the build process with the correct version of SC2 API so you can focus on creating your bot.
